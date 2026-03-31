@@ -59,20 +59,21 @@
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
 
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwoKLblNG2BrTYvuBTyRi1WnCdOrJtm3ya3qFvTh0zcQFdK9j9Bx7mWfYZcWIf6NZa-/exec";
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzwe6uEdPy0YFgc8oidS9mt6nHjo3C1vlL03LDatr09oceqbB3HkysON2Lj4k7mOGys/exec";
 
 async function sendToSheets(payload) {
   if (!WEBHOOK_URL) return;
   try {
     await fetch(WEBHOOK_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
   } catch(e) { console.warn('Sheets sync failed:', e); }
 }
 
-const ADMIN_PASSWORD = "ipbsnRNOH26";
+const ADMIN_PASSWORD = "KneeStudy2024";
 const TOTAL_STEPS = 17;
 const SAT_OPTIONS = [{label:"Very Satisfied",value:8},{label:"Satisfied",value:6},{label:"Neutral",value:4},{label:"Dissatisfied",value:2},{label:"Very Dissatisfied",value:0}];
 const EXP_OPTIONS = [{label:"Much better than expected",value:5},{label:"Better than expected",value:4},{label:"Same as expected",value:3},{label:"Worse than expected",value:2},{label:"Much worse than expected",value:1}];
@@ -209,15 +210,35 @@ function Welcome({onStart}) {
 }
 
 function ContactInfo({d,set,token,onNext}) {
+  const [errors,setErrors]=useState({});
+  const next=()=>{
+    const e={};
+    if(!d.contact_name||!d.contact_name.trim()) e.contact_name='Please enter your full name';
+    if(!d.contact_email||!d.contact_email.trim()) e.contact_email='Please enter your email address';
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.contact_email)) e.contact_email='Please enter a valid email address';
+    if(!d.contact_phone||!d.contact_phone.trim()) e.contact_phone='Please enter your phone number';
+    if(!d.survey_date) e.survey_date='Please enter today\'s date';
+    setErrors(e);
+    if(!Object.keys(e).length) onNext();
+  };
   return (
     <div className="fade-up">
-      <SectionHeader tag="Step 1 · Follow-up Contact" title="Contact Details" subtitle="All fields optional — only used to send you a reminder if you don't finish."/>
+      <SectionHeader tag="Step 1 · Your Details" title="Before we begin" subtitle="We need a few details so we can match your responses to your records."/>
       <div style={{background:'#FFF7ED',border:'1px solid #FED7AA',borderRadius:14,padding:'12px 16px',marginBottom:20,fontSize:13,color:'#92400E',display:'flex',gap:10}}>
-        <span>ℹ️</span><span>Contact details are stored securely and never shared outside the research team.</span>
+        <span>ℹ️</span><span>Your details are stored securely and never shared outside the research team.</span>
       </div>
-      <FormField label="Full Name" hint="optional"><input type="text" className="inp" placeholder="e.g. Jane Smith" value={d.contact_name||''} onChange={e=>set('contact_name',e.target.value)}/></FormField>
-      <FormField label="Email Address" hint="optional"><input type="email" className="inp" placeholder="e.g. jane@email.com" value={d.contact_email||''} onChange={e=>set('contact_email',e.target.value)}/></FormField>
-      <FormField label="Phone Number" hint="optional"><input type="tel" className="inp" placeholder="e.g. 07700 900000" value={d.contact_phone||''} onChange={e=>set('contact_phone',e.target.value)}/></FormField>
+      <FormField label="Today's Date" required error={errors.survey_date}>
+        <input type="date" className={`inp${errors.survey_date?' err':''}`} value={d.survey_date||''} onChange={e=>set('survey_date',e.target.value)}/>
+      </FormField>
+      <FormField label="Full Name" required error={errors.contact_name}>
+        <input type="text" className={`inp${errors.contact_name?' err':''}`} placeholder="e.g. Jane Smith" value={d.contact_name||''} onChange={e=>set('contact_name',e.target.value)}/>
+      </FormField>
+      <FormField label="Email Address" required error={errors.contact_email}>
+        <input type="email" className={`inp${errors.contact_email?' err':''}`} placeholder="e.g. jane@email.com" value={d.contact_email||''} onChange={e=>set('contact_email',e.target.value)}/>
+      </FormField>
+      <FormField label="Phone Number" required error={errors.contact_phone}>
+        <input type="tel" className={`inp${errors.contact_phone?' err':''}`} placeholder="e.g. 07700 900000" value={d.contact_phone||''} onChange={e=>set('contact_phone',e.target.value)}/>
+      </FormField>
       <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:14,padding:'14px 16px',marginBottom:4,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div>
           <p style={{fontSize:12,color:'#6B7280',marginBottom:2}}>Your survey reference</p>
@@ -226,7 +247,7 @@ function ContactInfo({d,set,token,onNext}) {
         <button type="button" onClick={()=>{try{navigator.clipboard.writeText(token);}catch(e){}}} style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'5px 10px',cursor:'pointer'}}>Copy</button>
       </div>
       <p style={{fontSize:12,color:'#9CA3AF',marginBottom:20}}>Keep this reference if you wish to query your data later.</p>
-      <NavBtns onNext={onNext}/>
+      <NavBtns onNext={next}/>
     </div>
   );
 }
@@ -245,7 +266,6 @@ function Demographics({d,set,onBack,onNext}) {
       <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:12,padding:'10px 14px',marginBottom:20,fontSize:13,color:'#1E40AF'}}>
         💡 Unsure about any detail? Tap <strong>"Don't know"</strong> — you can still complete the survey.
       </div>
-      <FormField label="Today's Date"><input type="date" className="inp" value={d.survey_date||''} onChange={e=>set('survey_date',e.target.value)}/></FormField>
       <FormField label="Date of Birth" hint="optional">
         {d.dob==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:12,padding:'12px 16px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DKToggle fieldKey="dob"/></div>:
         <><input type="date" className="inp" value={d.dob||''} onChange={e=>set('dob',e.target.value)}/><DKToggle fieldKey="dob"/></>}

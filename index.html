@@ -62,15 +62,33 @@ const { useState, useEffect, useRef, useCallback } = React;
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwIhl1qhUE4EpuNkbBsMUISqDAQVbUP_LQ7d9G5yw4VI77saQeMU52ApKcKlDW0edeP/exec";
 
 async function sendToSheets(payload) {
-  if (!WEBHOOK_URL) return;
+  if (!WEBHOOK_URL) return { ok: false, error: 'No webhook URL' };
   try {
-    await fetch(WEBHOOK_URL, {
+    // text/plain avoids CORS preflight; Apps Script still receives the body
+    const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
-  } catch(e) { console.warn('Sheets sync failed:', e); }
+    // no-cors always returns opaque response — treat as success if no exception
+    return { ok: true };
+  } catch(e) {
+    console.error('Sheets POST failed:', e);
+    return { ok: false, error: String(e) };
+  }
+}
+
+async function fetchFromSheets() {
+  if (!WEBHOOK_URL) return null;
+  try {
+    const res = await fetch(WEBHOOK_URL + '?action=read', { method: 'GET' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch(e) {
+    console.error('Sheets GET failed:', e);
+    return null;
+  }
 }
 
 const ADMIN_PASSWORD = "KneeStudy2024";
@@ -596,7 +614,7 @@ function EQ5D({d,set,onBack,onNext}) {
   );
 }
 
-function Review({d,scores,onBack,onSubmit}) {
+function Review({d,scores,onBack,onSubmit,submitting,submitError}) {
   return (
     <div className="fade-up" style={{textAlign:'center',padding:'12px 0'}}>
       <div style={{fontSize:56,marginBottom:16}}>🎉</div>
@@ -606,23 +624,26 @@ function Review({d,scores,onBack,onSubmit}) {
       </p>
       <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:18,padding:'20px',maxWidth:340,margin:'0 auto 28px',textAlign:'left'}}>
         <p style={{fontWeight:600,color:'#1E3A5F',fontSize:15,marginBottom:12}}>Before you submit, just check:</p>
-        {[
-          'Are you happy with all your answers?',
-          'Did you answer about your operated knee?',
-          'Were your pain scores honest and accurate?',
-        ].map(q=>(
+        {['Are you happy with all your answers?','Did you answer about your operated knee?','Were your pain scores honest and accurate?'].map(q=>(
           <div key={q} style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:10}}>
             <span style={{fontSize:18,marginTop:1}}>✓</span>
             <p style={{fontSize:14,color:'#374151',margin:0,lineHeight:1.5}}>{q}</p>
           </div>
         ))}
       </div>
+      {submitError&&(
+        <div style={{background:'#FEF2F2',border:'1px solid #FCA5A5',borderRadius:14,padding:'12px 16px',marginBottom:16,maxWidth:340,margin:'0 auto 16px',fontSize:14,color:'#DC2626'}}>
+          ⚠️ {submitError}
+        </div>
+      )}
       <p style={{fontSize:13,color:'#9CA3AF',maxWidth:320,margin:'0 auto 24px',lineHeight:1.5}}>
         If you want to change anything, use the back button. Otherwise, tap below to send your answers.
       </p>
       <div style={{display:'flex',gap:10,maxWidth:340,margin:'0 auto'}}>
-        <button type="button" className="btn-secondary" onClick={onBack} style={{flex:'0 0 auto',padding:'13px 20px'}}>← Go back</button>
-        <button type="button" className="btn-primary" onClick={onSubmit}>Send my answers ✓</button>
+        <button type="button" className="btn-secondary" onClick={onBack} style={{flex:'0 0 auto',padding:'13px 20px'}} disabled={submitting}>← Go back</button>
+        <button type="button" className="btn-primary" onClick={onSubmit} disabled={submitting}>
+          {submitting ? '⏳ Saving...' : 'Send my answers ✓'}
+        </button>
       </div>
     </div>
   );
@@ -661,7 +682,52 @@ function AdminLogin({onLogin}) {
   );
 }
 
-function AdminDashboard({subs,onLogout}) {
+function AdminDashboard({localSubs,onLogout}) {
+  const [sheetSubs, setSheetSubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [lastRefresh, setLastRefresh] = useState(null);
+
+  const loadFromSheets = useCallback(async () => {
+    setLoading(true); setLoadError('');
+    const result = await fetchFromSheets();
+    if (result && result.rows) {
+      // Convert flat sheet rows back into the same shape as localSubs
+      const mapped = result.rows.map(r => ({
+        id: r.token, token: r.token,
+        timestamp: r.timestamp, lastStep: r.lastStep,
+        status: r.status,
+        data: {
+          contact_name: r.contact_name, contact_email: r.contact_email, contact_phone: r.contact_phone,
+          survey_date: r.survey_date, dob: r.dob, sex: r.sex,
+          height_ft: r.height, weight: r.weight, ethnicity: r.ethnicity,
+          surgeon: r.surgeon, side: r.side, global_sat: r.global_sat,
+          eq_mob: r.eq_mob, eq_self: r.eq_self, eq_usual: r.eq_usual,
+          eq_pain: r.eq_pain, eq_anx: r.eq_anx,
+        },
+        scores: {
+          sym: Number(r.kss_sym)||0, sat: Number(r.kss_sat)||0, exp: Number(r.kss_exp)||0,
+          wlk: Number(r.kss_wlk)||0, std: Number(r.kss_std)||0, adv: Number(r.kss_adv)||0,
+          disc: Number(r.kss_disc)||0, func: Number(r.kss_func)||0, subjective: Number(r.kss_subj)||0,
+          vas: Number(r.vas_postop)||0, vas_preop: r.vas_preop!==''?Number(r.vas_preop):null,
+          vas_delta: r.vas_delta!==''?Number(r.vas_delta):null,
+          lefRaw: Number(r.promis_lef)||0, piRaw: Number(r.promis_pi)||0, pifRaw: Number(r.promis_pif)||0,
+          eq5dSum: Number(r.eq5d_sum)||0, eqVas: Number(r.eq_vas)||0,
+        }
+      }));
+      setSheetSubs(mapped);
+      setLastRefresh(new Date());
+    } else {
+      setLoadError('Could not load data from Google Sheets. Showing local session data only.');
+      setSheetSubs([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { loadFromSheets(); }, [loadFromSheets]);
+
+  // Merge: sheet data is source of truth; local adds any unsaved-yet entries
+  const subs = sheetSubs.length > 0 ? sheetSubs : localSubs;
   const [filterStatus,setFilterStatus]=useState('all');
   const [filterSurgeon,setFilterSurgeon]=useState('');
   const [filterSide,setFilterSide]=useState('');
@@ -678,10 +744,32 @@ function AdminDashboard({subs,onLogout}) {
   const dropOffSteps=partial.reduce((acc,s)=>{const k=STEP_NAMES[s.lastStep]||`Step ${s.lastStep}`;acc[k]=(acc[k]||0)+1;return acc;},{});
   return (
     <div className="fade-up">
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
-        <div><h2 className="serif" style={{fontSize:26,fontWeight:700,color:'#111827'}}>Admin Dashboard</h2><p style={{fontSize:13,color:'#6B7280'}}>IPBSN / Knee Surgery — Patient-Reported Outcomes</p></div>
-        <button onClick={onLogout} style={{fontSize:13,color:'#9CA3AF',textDecoration:'underline',background:'none',border:'none',cursor:'pointer'}}>Log out</button>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,flexWrap:'wrap',gap:8}}>
+        <div>
+          <h2 className="serif" style={{fontSize:26,fontWeight:700,color:'#111827'}}>Admin Dashboard</h2>
+          <p style={{fontSize:13,color:'#6B7280'}}>IPBSN / Knee Surgery — Patient-Reported Outcomes</p>
+        </div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <button onClick={loadFromSheets} disabled={loading}
+            style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'6px 12px',cursor:loading?'wait':'pointer',fontFamily:'DM Sans,sans-serif',fontWeight:500}}>
+            {loading ? '⏳ Loading...' : '🔄 Refresh'}
+          </button>
+          <button onClick={onLogout} style={{fontSize:13,color:'#9CA3AF',textDecoration:'underline',background:'none',border:'none',cursor:'pointer'}}>Log out</button>
+        </div>
       </div>
+      {loadError&&(
+        <div style={{background:'#FFF7ED',border:'1px solid #FED7AA',borderRadius:12,padding:'10px 14px',marginBottom:16,fontSize:13,color:'#92400E'}}>
+          ⚠️ {loadError}
+        </div>
+      )}
+      {loading&&sheetSubs.length===0&&(
+        <div style={{textAlign:'center',padding:'40px 0',color:'#9CA3AF',fontSize:14}}>
+          ⏳ Loading responses from Google Sheets...
+        </div>
+      )}
+      {lastRefresh&&!loading&&(
+        <p style={{fontSize:11,color:'#D1D5DB',marginBottom:12,textAlign:'right'}}>Last synced: {lastRefresh.toLocaleTimeString()}</p>
+      )}
       <div style={{display:'flex',gap:4,background:'#F3F4F6',borderRadius:12,padding:4,marginBottom:20}}>
         {[['submissions','Submissions'],['dropoffs','Drop-offs'],['analytics','Analytics']].map(([k,lbl])=>(
           <button key={k} onClick={()=>setTab(k)} style={{flex:1,padding:'8px 4px',borderRadius:9,border:'none',cursor:'pointer',fontSize:13,fontWeight:500,fontFamily:'DM Sans,sans-serif',background:tab===k?'#fff':'transparent',color:tab===k?'#1B4E7A':'#6B7280',boxShadow:tab===k?'0 1px 4px rgba(0,0,0,.08)':'none',transition:'all .15s'}}>{lbl}</button>
@@ -859,6 +947,9 @@ function App() {
   const [subs,setSubs]=useState([]);
   const [adminIn,setAdminIn]=useState(false);
 
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
   const set=useCallback((k,v)=>setData(p=>({...p,[k]:v})),[]);
 
   const go=useCallback((n)=>{
@@ -876,10 +967,18 @@ function App() {
   },[data,token]);
 
   const handleSubmit=async()=>{
+    setSubmitting(true);
+    setSubmitError('');
     const scores=calcScores(data);
     const rec={id:token,token,timestamp:new Date().toISOString(),lastStep:17,status:'complete',data:{...data},scores};
+    const result = await sendToSheets({...rec, record_type:'complete'});
+    if (!result.ok) {
+      setSubmitError('Something went wrong saving your answers. Please try again.');
+      setSubmitting(false);
+      return;
+    }
     setSubs(prev=>{const existing=prev.findIndex(s=>s.token===token);if(existing>=0){const u=[...prev];u[existing]=rec;return u;}return[...prev,rec];});
-    await sendToSheets({...rec, record_type:'complete'});
+    setSubmitting(false);
     setStep(18);
     window.scrollTo({top:0,behavior:'smooth'});
   };
@@ -905,7 +1004,7 @@ function App() {
       case 14: return <PROMISPainIntensity d={data} set={set} onBack={()=>go(13)} onNext={()=>go(15)}/>;
       case 15: return <PROMISPainInterference d={data} set={set} onBack={()=>go(14)} onNext={()=>go(16)}/>;
       case 16: return <EQ5D d={data} set={set} onBack={()=>go(15)} onNext={()=>go(17)}/>;
-      case 17: return <Review d={data} scores={scores} onBack={()=>go(16)} onSubmit={handleSubmit}/>;
+      case 17: return <Review d={data} scores={scores} onBack={()=>go(16)} onSubmit={handleSubmit} submitting={submitting} submitError={submitError}/>;
       case 18: return <ThankYou token={token}/>;
       default: return null;
     }
@@ -934,7 +1033,7 @@ function App() {
           </>
         ):(
           <div className={adminIn?'card':''} style={adminIn?{}:{background:'transparent',boxShadow:'none',border:'none'}}>
-            {!adminIn?<AdminLogin onLogin={()=>setAdminIn(true)}/>:<AdminDashboard subs={subs} onLogout={()=>setAdminIn(false)}/>}
+            {!adminIn?<AdminLogin onLogin={()=>setAdminIn(true)}/>:<AdminDashboard localSubs={subs} onLogout={()=>setAdminIn(false)}/>}
           </div>
         )}
       </main>

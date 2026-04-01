@@ -67,6 +67,86 @@ const SB_HEADERS = {
   'Content-Type':  'application/json',
 };
 
+function buildRow(rec) {
+  const d = rec.data, sc = rec.scores || {};
+  return {
+    token:         rec.token,
+    status:        rec.status,
+    timestamp:     rec.timestamp,
+    last_step:     STEP_NAMES[rec.lastStep] || String(rec.lastStep),
+    contact_name:  d.contact_name  || '',
+    contact_email: d.contact_email || '',
+    contact_phone: d.contact_phone || '',
+    survey_date:   d.survey_date   || '',
+    dob:           d.dob       === 'dk' ? 'NK' : (d.dob       || ''),
+    sex:           d.sex        || '',
+    height:        d.height_ft === 'dk' ? 'NK' : `${d.height_ft||''}'${d.height_in||''}"`,
+    weight:        d.weight    === 'dk' ? 'NK' : String(d.weight || ''),
+    ethnicity:     d.ethnicity  || '',
+    surgeon:       d.surgeon   === 'dk' ? 'NK' : (d.surgeon   || ''),
+    side:          d.side       || '',
+    kss_sym:       sc.sym        ?? null,
+    kss_sat:       sc.sat        ?? null,
+    kss_exp:       sc.exp        ?? null,
+    kss_wlk:       sc.wlk        ?? null,
+    kss_std:       sc.std        ?? null,
+    kss_adv:       sc.adv        ?? null,
+    kss_disc:      sc.disc       ?? null,
+    kss_func:      sc.func       ?? null,
+    kss_subj:      sc.subjective ?? null,
+    vas_postop:    sc.vas        ?? null,
+    vas_preop:     sc.vas_preop  ?? null,
+    vas_delta:     sc.vas_delta  ?? null,
+    global_sat:    d.global_sat  || '',
+    promis_lef:    sc.lefRaw     ?? null,
+    promis_pi:     sc.piRaw      ?? null,
+    promis_pif:    sc.pifRaw     ?? null,
+    eq_mob:        d.eq_mob  ? Number(d.eq_mob)  : null,
+    eq_self:       d.eq_self ? Number(d.eq_self) : null,
+    eq_usual:      d.eq_usual? Number(d.eq_usual): null,
+    eq_pain:       d.eq_pain ? Number(d.eq_pain) : null,
+    eq_anx:        d.eq_anx  ? Number(d.eq_anx)  : null,
+    eq5d_sum:      sc.eq5dSum ?? null,
+    eq_vas:        sc.eqVas   ?? null,
+  };
+}
+
+async function sendToSupabase(rec) {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/responses?on_conflict=token`,
+      {
+        method:  'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body:    JSON.stringify(buildRow(rec)),
+      }
+    );
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('Supabase error:', err);
+      return { ok: false, error: err };
+    }
+    return { ok: true };
+  } catch(e) {
+    console.error('Supabase POST failed:', e);
+    return { ok: false, error: String(e) };
+  }
+}
+
+async function fetchFromSupabase() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/responses?select=*&order=timestamp.desc`,
+      { headers: SB_HEADERS }
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch(e) {
+    console.error('Supabase GET failed:', e);
+    return null;
+  }
+}
+  
 const ADMIN_PASSWORD = "KneeStudy2024";
 const TOTAL_STEPS = 17;
 const SAT_OPTIONS = [{label:"Very Satisfied",value:8},{label:"Satisfied",value:6},{label:"Neutral",value:4},{label:"Dissatisfied",value:2},{label:"Very Dissatisfied",value:0}];
@@ -664,43 +744,66 @@ function AdminDashboard({localSubs,onLogout}) {
   const [loadError, setLoadError] = useState('');
   const [lastRefresh, setLastRefresh] = useState(null);
 
-  const loadFromSheets = useCallback(async () => {
-    setLoading(true); setLoadError('');
-    const result = await fetchFromSheets();
-    if (result && result.rows) {
-      // Convert flat sheet rows back into the same shape as localSubs
-      const mapped = result.rows.map(r => ({
+const loadFromSupabase = useCallback(async () => {
+  setLoading(true); setLoadError('');
+  const records = await fetchFromSupabase();
+  if (records) {
+    const mapped = records.map(r => {
+      const stepNum = parseInt(
+        Object.keys(STEP_NAMES).find(k => STEP_NAMES[k] === r.last_step)
+      ) || 17;
+      return {
         id: r.token, token: r.token,
-        timestamp: r.timestamp, lastStep: r.lastStep,
-        status: r.status,
+        timestamp: r.timestamp,
+        lastStep:  stepNum,
+        status:    r.status || 'partial',
         data: {
-          contact_name: r.contact_name, contact_email: r.contact_email, contact_phone: r.contact_phone,
-          survey_date: r.survey_date, dob: r.dob, sex: r.sex,
-          height_ft: r.height, weight: r.weight, ethnicity: r.ethnicity,
-          surgeon: r.surgeon, side: r.side, global_sat: r.global_sat,
-          eq_mob: r.eq_mob, eq_self: r.eq_self, eq_usual: r.eq_usual,
-          eq_pain: r.eq_pain, eq_anx: r.eq_anx,
+          contact_name:  r.contact_name  || '',
+          contact_email: r.contact_email || '',
+          contact_phone: r.contact_phone || '',
+          survey_date:   r.survey_date   || '',
+          dob:           r.dob       || '',
+          sex:           r.sex       || '',
+          height_ft:     r.height    || '',
+          weight:        r.weight    || '',
+          ethnicity:     r.ethnicity || '',
+          surgeon:       r.surgeon   || '',
+          side:          r.side      || '',
+          global_sat:    r.global_sat|| '',
+          eq_mob:  r.eq_mob,  eq_self:  r.eq_self,
+          eq_usual: r.eq_usual, eq_pain: r.eq_pain, eq_anx: r.eq_anx,
         },
         scores: {
-          sym: Number(r.kss_sym)||0, sat: Number(r.kss_sat)||0, exp: Number(r.kss_exp)||0,
-          wlk: Number(r.kss_wlk)||0, std: Number(r.kss_std)||0, adv: Number(r.kss_adv)||0,
-          disc: Number(r.kss_disc)||0, func: Number(r.kss_func)||0, subjective: Number(r.kss_subj)||0,
-          vas: Number(r.vas_postop)||0, vas_preop: r.vas_preop!==''?Number(r.vas_preop):null,
-          vas_delta: r.vas_delta!==''?Number(r.vas_delta):null,
-          lefRaw: Number(r.promis_lef)||0, piRaw: Number(r.promis_pi)||0, pifRaw: Number(r.promis_pif)||0,
-          eq5dSum: Number(r.eq5d_sum)||0, eqVas: Number(r.eq_vas)||0,
+          sym:        r.kss_sym  ?? 0,
+          sat:        r.kss_sat  ?? 0,
+          exp:        r.kss_exp  ?? 0,
+          wlk:        r.kss_wlk  ?? 0,
+          std:        r.kss_std  ?? 0,
+          adv:        r.kss_adv  ?? 0,
+          disc:       r.kss_disc ?? 0,
+          func:       r.kss_func ?? 0,
+          subjective: r.kss_subj ?? 0,
+          vas:        r.vas_postop  ?? 0,
+          vas_preop:  r.vas_preop  ?? null,
+          vas_delta:  r.vas_delta  ?? null,
+          lefRaw:     r.promis_lef ?? 0,
+          piRaw:      r.promis_pi  ?? 0,
+          pifRaw:     r.promis_pif ?? 0,
+          eq5dSum:    r.eq5d_sum   ?? 0,
+          eqVas:      r.eq_vas     ?? 0,
         }
-      }));
-      setSheetSubs(mapped);
-      setLastRefresh(new Date());
-    } else {
-      setLoadError('Could not load data from Google Sheets. Showing local session data only.');
-      setSheetSubs([]);
-    }
-    setLoading(false);
-  }, []);
+      };
+    });
+    setSheetSubs(mapped);
+    setLastRefresh(new Date());
+  } else {
+    setLoadError('Could not load data from Supabase. Check your credentials.');
+    setSheetSubs([]);
+  }
+  setLoading(false);
+}, []);
 
-  useEffect(() => { loadFromSheets(); }, [loadFromSheets]);
+useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
 
   // Merge: sheet data is source of truth; local adds any unsaved-yet entries
   const subs = sheetSubs.length > 0 ? sheetSubs : localSubs;
@@ -726,7 +829,7 @@ function AdminDashboard({localSubs,onLogout}) {
           <p style={{fontSize:13,color:'#6B7280'}}>IPBSN / Knee Surgery — Patient-Reported Outcomes</p>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <button onClick={loadFromSheets} disabled={loading}
+          <button onClick={loadFromSupabase} disabled={loading}
             style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'6px 12px',cursor:loading?'wait':'pointer',fontFamily:'DM Sans,sans-serif',fontWeight:500}}>
             {loading ? '⏳ Loading...' : '🔄 Refresh'}
           </button>
@@ -947,7 +1050,7 @@ function App() {
     setSubmitError('');
     const scores=calcScores(data);
     const rec={id:token,token,timestamp:new Date().toISOString(),lastStep:17,status:'complete',data:{...data},scores};
-    const result = await sendToSheets({...rec, record_type:'complete'});
+    const result = await sendToSupabase(rec);
     if (!result.ok) {
       setSubmitError('Something went wrong saving your answers. Please try again.');
       setSubmitting(false);

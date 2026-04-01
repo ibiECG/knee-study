@@ -147,7 +147,7 @@ async function fetchFromSupabase() {
   }
 }
   
-const ADMIN_PASSWORD = "KneeStudy2024";
+const ADMIN_PASSWORD = "ipbsnRNOH26";
 const TOTAL_STEPS = 17;
 const SAT_OPTIONS = [{label:"Very Satisfied",value:8},{label:"Satisfied",value:6},{label:"Neutral",value:4},{label:"Dissatisfied",value:2},{label:"Very Dissatisfied",value:0}];
 const EXP_OPTIONS = [{label:"Much better than expected",value:5},{label:"Better than expected",value:4},{label:"Same as expected",value:3},{label:"Worse than expected",value:2},{label:"Much worse than expected",value:1}];
@@ -155,7 +155,31 @@ const DIFF_OPTIONS = [{label:"No difficulty",value:5},{label:"Mild difficulty",v
 const PROMIS_LEF_OPTIONS = [{label:"Without any difficulty",value:5},{label:"With a little difficulty",value:4},{label:"With some difficulty",value:3},{label:"With much difficulty",value:2},{label:"Unable to do",value:1}];
 const PROMIS_PIF_OPTIONS = [{label:"Not at all",value:1},{label:"A little bit",value:2},{label:"Somewhat",value:3},{label:"Quite a bit",value:4},{label:"Very much",value:5}];
 const EQ5D_OPTIONS = [{label:"No problems",value:1},{label:"Slight problems",value:2},{label:"Moderate problems",value:3},{label:"Severe problems",value:4},{label:"Extreme problems / unable to",value:5}];
-const DISC_ACTIVITIES = ["Cycling","Golf","Tennis (singles)","Swimming","Dancing","Hiking / walking for exercise","Jogging / running","Skiing / snowboarding","Gardening / yard work","Aerobics / gym classes","Yoga / Pilates","Other recreational sport"];
+const DISC_ACTIVITIES = [
+  // Everyday activities
+  "Walking / leisure walks",
+  "Shopping / errands on foot",
+  "Light housework",
+  "Cooking / standing in kitchen",
+  "Visiting family / grandchildren",
+  "Travelling / day trips",
+  "Church / community activities",
+  "Volunteering",
+  // Recreational
+  "Gardening / yard work",
+  "Swimming",
+  "Cycling",
+  "Dancing",
+  "Golf",
+  "Bowls / lawn bowls",
+  "Yoga / Pilates / stretching",
+  "Aerobics / gym classes",
+  "Hiking / walking for exercise",
+  "Jogging / running",
+  "Tennis",
+  "Skiing / snowboarding",
+  "Other recreational sport",
+];
 const WALKING_AIDS_OPTS = [{label:"No walking aids needed",value:10},{label:"Cane occasionally",value:7},{label:"Cane routinely",value:4},{label:"Two canes or crutches",value:2},{label:"Walker or unable without support",value:0}];
 const STANDING_OPTS = [{label:"Unlimited",value:10},{label:"More than 30 minutes",value:8},{label:"10–30 minutes",value:6},{label:"5–10 minutes",value:4},{label:"Less than 5 minutes",value:2},{label:"Unable to stand",value:0}];
 const WALKING_DIST_OPTS = [{label:"Unlimited (more than 1 mile)",value:10},{label:"6–10 blocks",value:8},{label:"3–5 blocks",value:6},{label:"1–2 blocks",value:4},{label:"Around house only",value:2},{label:"Unable to walk",value:0}];
@@ -495,17 +519,21 @@ function KSSDiscretionary({d,set,onBack,onNext}) {
   const sel=d.disc_sel||[];
   const toggle=(act)=>sel.includes(act)?set('disc_sel',sel.filter(a=>a!==act)):sel.length<3&&set('disc_sel',[...sel,act]);
   const discScore=sel.slice(0,3).reduce((s,a)=>s+Number(d['disc_'+a]||0),0);
-  const ok=sel.length===3&&sel.every(a=>d['disc_'+a]!==undefined);
+  const allRated=sel.length>0&&sel.every(a=>d['disc_'+a]!==undefined);
+  const canContinue=sel.length===0||allRated;
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section B4d · KSS Functional" title="Discretionary Activities" subtitle="Select the 3 recreational activities most important to you, then rate each."/>
+      <SectionHeader tag="Section B4d · KSS Functional" title="Discretionary Activities" subtitle="Optional — select up to 3 recreational or everyday activities most important to you, then rate each."/>
+      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:12,padding:'10px 14px',marginBottom:16,fontSize:13,color:'#1E40AF'}}>
+        💡 This section is optional. If none of these apply to you, tap <strong>Continue</strong> to skip.
+      </div>
       <p style={{fontSize:13,color:'#6B7280',marginBottom:10}}>{sel.length}/3 selected</p>
       <div style={{display:'flex',flexWrap:'wrap',gap:8,marginBottom:20}}>
         {DISC_ACTIVITIES.map(act=>{const isSel=sel.includes(act),isMax=!isSel&&sel.length>=3;return<button key={act} type="button" className={`tag-btn${isSel?' active':''}${isMax?' disabled':''}`} onClick={()=>!isMax&&toggle(act)}>{act}</button>;})}
       </div>
       {sel.length>0&&(
         <div style={{background:'#F8FAFF',border:'1px solid #BFDBFE',borderRadius:16,padding:'16px 16px 4px'}}>
-          <p style={{fontSize:13,fontWeight:600,color:'#1B4E7A',marginBottom:12}}>Rate ability for each selected activity:</p>
+          <p style={{fontSize:13,fontWeight:600,color:'#1B4E7A',marginBottom:12}}>Rate your ability for each selected activity:</p>
           {sel.map(act=>(
             <div key={act} style={{marginBottom:16}}>
               <p style={{fontWeight:600,color:'#1F2937',marginBottom:6}}>{act}</p>
@@ -514,8 +542,8 @@ function KSSDiscretionary({d,set,onBack,onNext}) {
           ))}
         </div>
       )}
-      <ScoreBadge label="B4d Discretionary" score={discScore} max={15}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={!ok}/>
+      {sel.length>0&&<ScoreBadge label="B4d Discretionary" score={discScore} max={15}/>}
+      <NavBtns onBack={onBack} onNext={onNext} disabled={!canContinue}/>
     </div>
   );
 }
@@ -706,6 +734,16 @@ function Review({d,scores,onBack,onSubmit,submitting,submitError}) {
 }
 
 function ThankYou({token}) {
+  const [copied,setCopied]=useState(false);
+  const copy=()=>{
+    try{navigator.clipboard.writeText(token).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}
+    catch(e){
+      const el=document.createElement('textarea');
+      el.value=token;document.body.appendChild(el);el.select();
+      document.execCommand('copy');document.body.removeChild(el);
+      setCopied(true);setTimeout(()=>setCopied(false),2000);
+    }
+  };
   return (
     <div className="scale-in" style={{textAlign:'center',padding:'48px 0'}}>
       <div style={{width:72,height:72,background:'linear-gradient(135deg,#22C55E,#16A34A)',borderRadius:22,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',boxShadow:'0 8px 24px rgba(34,197,94,.3)'}}>
@@ -714,8 +752,11 @@ function ThankYou({token}) {
       <h1 className="serif" style={{fontSize:34,fontWeight:700,color:'#111827',marginBottom:10}}>Thank You!</h1>
       <p style={{fontSize:15,color:'#6B7280',maxWidth:320,margin:'0 auto 20px',lineHeight:1.6}}>Your responses have been recorded. Your participation helps improve outcomes for future patients.</p>
       <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:14,padding:'14px 20px',display:'inline-block',marginBottom:16}}>
-        <p style={{fontSize:12,color:'#6B7280',marginBottom:4}}>Your survey reference</p>
-        <p style={{fontSize:17,fontWeight:700,fontFamily:'monospace',color:'#1B4E7A',letterSpacing:'.05em'}}>{token}</p>
+        <p style={{fontSize:12,color:'#6B7280',marginBottom:6}}>Your survey reference</p>
+        <p style={{fontSize:17,fontWeight:700,fontFamily:'monospace',color:'#1B4E7A',letterSpacing:'.05em',marginBottom:10,userSelect:'all'}}>{token}</p>
+        <button onClick={copy} style={{fontSize:13,fontWeight:600,color:copied?'#16A34A':'#1B4E7A',background:copied?'#DCFCE7':'#EFF6FF',border:`1px solid ${copied?'#86EFAC':'#BFDBFE'}`,borderRadius:8,padding:'6px 16px',cursor:'pointer',transition:'all .2s',fontFamily:'DM Sans,sans-serif'}}>
+          {copied ? '✓ Copied!' : 'Copy reference'}
+        </button>
       </div>
       <p style={{fontSize:13,color:'#9CA3AF'}}>You may now close this window safely.</p>
     </div>

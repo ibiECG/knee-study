@@ -3,62 +3,80 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>Knee Outcomes Platform</title>
+  <title>Knee Outcomes Survey</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body { font-family: 'DM Sans', sans-serif; background: #F4F6FB; margin: 0; }
     h1, h2, h3, .serif { font-family: 'Fraunces', serif; }
-    .vas-slider { -webkit-appearance:none; width:100%; height:8px; border-radius:4px; outline:none; cursor:pointer; background:linear-gradient(to right,#1B4E7A 0%,#1B4E7A var(--pct,0%),#D1D5DB var(--pct,0%),#D1D5DB 100%); }
-    .vas-slider::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background:#1B4E7A; cursor:pointer; border:3px solid #fff; box-shadow:0 2px 8px rgba(27,78,122,.35); }
-    .vas-slider::-moz-range-thumb { width:26px; height:26px; border-radius:50%; background:#1B4E7A; cursor:pointer; border:3px solid #fff; }
-    .vas-slider.preop { background:linear-gradient(to right,#7C3AED 0%,#7C3AED var(--pct,0%),#D1D5DB var(--pct,0%),#D1D5DB 100%); }
-    .vas-slider.preop::-webkit-slider-thumb { background:#7C3AED; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
-    .fade-up { animation:fadeUp .35s ease forwards; }
+
+    /* ── Sliders ── */
+    .vas-slider { -webkit-appearance:none; width:100%; height:8px; border-radius:4px; outline:none; cursor:pointer;
+      background:linear-gradient(to right,#1B4E7A 0%,#1B4E7A var(--pct,0%),#D1D5DB var(--pct,0%),#D1D5DB 100%); }
+    .vas-slider::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:#1B4E7A; cursor:pointer; border:3px solid #fff; box-shadow:0 2px 6px rgba(27,78,122,.4); }
+    .vas-slider::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background:#1B4E7A; cursor:pointer; border:3px solid #fff; }
+    .vas-slider.pre { background:linear-gradient(to right,#7C3AED 0%,#7C3AED var(--pct,0%),#D1D5DB var(--pct,0%),#D1D5DB 100%); }
+    .vas-slider.pre::-webkit-slider-thumb { background:#7C3AED; }
+    .vas-slider.pre::-moz-range-thumb { background:#7C3AED; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation:fadeUp .3s ease forwards; }
     @keyframes scaleIn { from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)} }
     .scale-in { animation:scaleIn .3s ease forwards; }
     .prog-bar { transition:width .5s cubic-bezier(.4,0,.2,1); }
-    .opt-btn { width:100%;text-align:left;padding:12px 16px;border-radius:14px;border:2px solid #E5E7EB;background:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:#374151;cursor:pointer;transition:all .15s;margin-bottom:8px;display:block; }
-    .opt-btn:hover:not(.active) { border-color:#1B4E7A;background:#EFF6FF; }
-    .opt-btn.active { background:#1B4E7A;color:#fff;border-color:#1B4E7A; }
-    .card { background:#fff;border-radius:20px;box-shadow:0 2px 16px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.03);padding:28px; }
-    .inp { width:100%;border:2px solid #E5E7EB;border-radius:12px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:15px;color:#1F2937;outline:none;transition:border-color .15s;background:#fff; }
+
+    /* ── Cards / Layout ── */
+    .card { background:#fff; border-radius:20px; box-shadow:0 2px 16px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.03); padding:24px; }
+    .post-panel { background:#EFF6FF; border:2px solid #BFDBFE; border-radius:14px; padding:14px; }
+    .pre-panel  { background:#F5F3FF; border:2px solid #DDD6FE; border-radius:14px; padding:14px; }
+    .post-label { font-size:11px; font-weight:700; letter-spacing:.07em; color:#1E40AF; text-transform:uppercase; margin-bottom:8px; }
+    .pre-label  { font-size:11px; font-weight:700; letter-spacing:.07em; color:#6D28D9; text-transform:uppercase; margin-bottom:8px; }
+    .dual-grid  { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+    /* ── Buttons ── */
+    .opt-btn { width:100%; text-align:left; padding:11px 14px; border-radius:12px; border:2px solid #E5E7EB; background:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; margin-bottom:7px; display:block; }
+    .opt-btn:hover:not(.active) { border-color:#1B4E7A; background:#EFF6FF; }
+    .opt-btn.active { background:#1B4E7A; color:#fff; border-color:#1B4E7A; }
+    /* compact dual buttons */
+    .d-btn { width:100%; text-align:left; padding:7px 9px; border-radius:9px; border:2px solid #E5E7EB; background:#fff; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; margin-bottom:5px; display:block; line-height:1.3; }
+    .d-btn:hover:not(.p-active):not(.r-active) { border-color:#94A3B8; }
+    .d-btn.p-active { background:#1B4E7A; color:#fff; border-color:#1B4E7A; }
+    .d-btn.r-active { background:#7C3AED; color:#fff; border-color:#7C3AED; }
+
+    .inp { width:100%; border:2px solid #E5E7EB; border-radius:12px; padding:11px 14px; font-family:'DM Sans',sans-serif; font-size:15px; color:#1F2937; outline:none; transition:border-color .15s; background:#fff; }
     .inp:focus { border-color:#1B4E7A; }
     .inp.err { border-color:#EF4444; }
-    select.inp { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:20px;-webkit-appearance:none;padding-right:40px; }
-    .pill-btn { flex:1;padding:11px;border-radius:12px;border:2px solid #E5E7EB;background:#fff;font-family:'DM Sans',sans-serif;font-weight:500;font-size:15px;cursor:pointer;transition:all .15s;color:#374151;text-align:center; }
-    .pill-btn.active { background:#1B4E7A;color:#fff;border-color:#1B4E7A; }
-    .pill-btn:hover:not(.active) { border-color:#1B4E7A;background:#EFF6FF; }
-    .tag-btn { padding:8px 14px;border-radius:20px;border:2px solid #E5E7EB;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:#374151; }
-    .tag-btn.active { background:#1B4E7A;color:#fff;border-color:#1B4E7A; }
-    .tag-btn.disabled { background:#F9FAFB;border-color:#F3F4F6;color:#D1D5DB;cursor:not-allowed; }
-    .score-badge { background:linear-gradient(135deg,#EEF4FF,#E0EEFF);border:1px solid #BFDBFE;border-radius:14px;padding:14px;text-align:center; }
-    .btn-primary { flex:1;padding:13px 24px;border-radius:14px;border:none;background:#1B4E7A;color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s; }
-    .btn-primary:hover:not(:disabled) { background:#163E64;box-shadow:0 4px 14px rgba(27,78,122,.35); }
-    .btn-primary:disabled { background:#9CA3AF;cursor:not-allowed; }
-    .btn-secondary { flex:1;padding:13px 24px;border-radius:14px;border:2px solid #D1D5DB;background:#fff;color:#6B7280;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;cursor:pointer;transition:all .15s; }
-    .btn-secondary:hover { border-color:#1B4E7A;color:#1B4E7A;background:#EFF6FF; }
-    .vas-panel { border-radius:16px;padding:20px; }
-    .vas-panel-postop { background:#EFF6FF;border:2px solid #BFDBFE; }
-    .vas-panel-preop  { background:#F5F3FF;border:2px solid #DDD6FE; }
-    .status-pill { display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600; }
-    .status-complete { background:#DCFCE7;color:#166534; }
-    .status-partial  { background:#FEF9C3;color:#854D0E; }
-    ::-webkit-scrollbar { width:6px; }
-    ::-webkit-scrollbar-track { background:transparent; }
-    ::-webkit-scrollbar-thumb { background:#CBD5E1;border-radius:3px; }
+    select.inp { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:18px; -webkit-appearance:none; padding-right:38px; }
+    .pill-btn { flex:1; padding:10px; border-radius:11px; border:2px solid #E5E7EB; background:#fff; font-family:'DM Sans',sans-serif; font-weight:500; font-size:15px; cursor:pointer; transition:all .15s; color:#374151; text-align:center; }
+    .pill-btn.active { background:#1B4E7A; color:#fff; border-color:#1B4E7A; }
+    .tag-btn { padding:7px 13px; border-radius:20px; border:2px solid #E5E7EB; background:#fff; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; color:#374151; }
+    .tag-btn.active { background:#1B4E7A; color:#fff; border-color:#1B4E7A; }
+    .tag-btn.disabled { background:#F9FAFB; border-color:#F3F4F6; color:#D1D5DB; cursor:not-allowed; }
+    .btn-primary { flex:1; padding:13px 22px; border-radius:13px; border:none; background:#1B4E7A; color:#fff; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; transition:all .15s; }
+    .btn-primary:hover:not(:disabled) { background:#163E64; box-shadow:0 4px 14px rgba(27,78,122,.35); }
+    .btn-primary:disabled { background:#9CA3AF; cursor:not-allowed; }
+    .btn-secondary { flex:1; padding:13px 22px; border-radius:13px; border:2px solid #D1D5DB; background:#fff; color:#6B7280; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:500; cursor:pointer; transition:all .15s; }
+    .btn-secondary:hover { border-color:#1B4E7A; color:#1B4E7A; background:#EFF6FF; }
+    .score-badge { background:linear-gradient(135deg,#EEF4FF,#E0EEFF); border:1px solid #BFDBFE; border-radius:13px; padding:12px; text-align:center; }
+    .status-pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+    .status-complete { background:#DCFCE7; color:#166534; }
+    .status-partial  { background:#FEF9C3; color:#854D0E; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:3px; }
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+const { useState, useEffect, useCallback } = React;
 
+/* ═══════════════════════════════════════
+   SUPABASE — from your working version
+   ═══════════════════════════════════════ */
 const SUPABASE_URL      = "https://hvwafjnloufjkmnzqxkt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_KDxPcw8CLQBVWjYFM4wrvg_JOFfTCEp";
 const SB_HEADERS = {
@@ -67,161 +85,235 @@ const SB_HEADERS = {
   'Content-Type':  'application/json',
 };
 
-function buildRow(rec) {
-  const d = rec.data, sc = rec.scores || {};
-  return {
-    token:         rec.token,
-    status:        rec.status,
-    timestamp:     rec.timestamp,
-    last_step:     STEP_NAMES[rec.lastStep] || String(rec.lastStep),
-    contact_name:  d.contact_name  || '',
-    contact_email: d.contact_email || '',
-    contact_phone: d.contact_phone || '',
-    survey_date:   d.survey_date   || '',
-    dob:           d.dob       === 'dk' ? 'NK' : (d.dob       || ''),
-    sex:           d.sex        || '',
-    height:        d.height_ft === 'dk' ? 'NK' : `${d.height_ft||''}'${d.height_in||''}"`,
-    weight:        d.weight    === 'dk' ? 'NK' : String(d.weight || ''),
-    ethnicity:     d.ethnicity  || '',
-    surgeon:       d.surgeon   === 'dk' ? 'NK' : (d.surgeon   || ''),
-    side:          d.side       || '',
-    kss_sym:       sc.sym        ?? null,
-    kss_sat:       sc.sat        ?? null,
-    kss_exp:       sc.exp        ?? null,
-    kss_wlk:       sc.wlk        ?? null,
-    kss_std:       sc.std        ?? null,
-    kss_adv:       sc.adv        ?? null,
-    kss_disc:      sc.disc       ?? null,
-    kss_func:      sc.func       ?? null,
-    kss_subj:      sc.subjective ?? null,
-    vas_postop:    sc.vas        ?? null,
-    vas_preop:     sc.vas_preop  ?? null,
-    vas_delta:     sc.vas_delta  ?? null,
-    global_sat:    d.global_sat  || '',
-    promis_lef:    sc.lefRaw     ?? null,
-    promis_pi:     sc.piRaw      ?? null,
-    promis_pif:    sc.pifRaw     ?? null,
-    eq_mob:        d.eq_mob  ? Number(d.eq_mob)  : null,
-    eq_self:       d.eq_self ? Number(d.eq_self) : null,
-    eq_usual:      d.eq_usual? Number(d.eq_usual): null,
-    eq_pain:       d.eq_pain ? Number(d.eq_pain) : null,
-    eq_anx:        d.eq_anx  ? Number(d.eq_anx)  : null,
-    eq5d_sum:      sc.eq5dSum ?? null,
-    eq_vas:        sc.eqVas   ?? null,
-  };
-}
-
 async function sendToSupabase(rec) {
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/responses?on_conflict=token`,
-      {
-        method:  'POST',
-        headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body:    JSON.stringify(buildRow(rec)),
-      }
-    );
-    if (!res.ok) {
-      const err = await res.text();
-      console.error('Supabase error:', err);
-      return { ok: false, error: err };
-    }
-    return { ok: true };
-  } catch(e) {
-    console.error('Supabase POST failed:', e);
-    return { ok: false, error: String(e) };
-  }
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/responses?on_conflict=token`, {
+      method:  'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body:    JSON.stringify(buildRow(rec)),
+    });
+    if (!res.ok) { const err = await res.text(); return { ok:false, error:err }; }
+    return { ok:true };
+  } catch(e) { return { ok:false, error:String(e) }; }
 }
 
 async function fetchFromSupabase() {
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/responses?select=*&order=timestamp.desc`,
-      { headers: SB_HEADERS }
-    );
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/responses?select=*&order=timestamp.desc`, { headers: SB_HEADERS });
     if (!res.ok) return null;
     return await res.json();
-  } catch(e) {
-    console.error('Supabase GET failed:', e);
-    return null;
-  }
+  } catch(e) { return null; }
 }
-  
-const ADMIN_PASSWORD = "ipbsnRNOH26";
-const TOTAL_STEPS = 17;
-const SAT_OPTIONS = [{label:"Very Satisfied",value:8},{label:"Satisfied",value:6},{label:"Neutral",value:4},{label:"Dissatisfied",value:2},{label:"Very Dissatisfied",value:0}];
-const EXP_OPTIONS = [{label:"Much better than expected",value:5},{label:"Better than expected",value:4},{label:"Same as expected",value:3},{label:"Worse than expected",value:2},{label:"Much worse than expected",value:1}];
-const DIFF_OPTIONS = [{label:"No difficulty",value:5},{label:"Mild difficulty",value:4},{label:"Moderate difficulty",value:3},{label:"Severe difficulty",value:2},{label:"Requires help",value:1},{label:"Unable to do",value:0}];
-const PROMIS_LEF_OPTIONS = [{label:"Without any difficulty",value:5},{label:"With a little difficulty",value:4},{label:"With some difficulty",value:3},{label:"With much difficulty",value:2},{label:"Unable to do",value:1}];
-const PROMIS_PIF_OPTIONS = [{label:"Not at all",value:1},{label:"A little bit",value:2},{label:"Somewhat",value:3},{label:"Quite a bit",value:4},{label:"Very much",value:5}];
-const EQ5D_OPTIONS = [{label:"No problems",value:1},{label:"Slight problems",value:2},{label:"Moderate problems",value:3},{label:"Severe problems",value:4},{label:"Extreme problems / unable to",value:5}];
-const DISC_ACTIVITIES = [
-  // Everyday activities
-  "Walking / leisure walks",
-  "Shopping / errands on foot",
-  "Light housework",
-  "Cooking / standing in kitchen",
-  "Visiting family / grandchildren",
-  "Travelling / day trips",
-  "Church / community activities",
-  "Volunteering",
-  // Recreational
-  "Gardening / yard work",
-  "Swimming",
-  "Cycling",
-  "Dancing",
-  "Golf",
-  "Bowls / lawn bowls",
-  "Yoga / Pilates / stretching",
-  "Aerobics / gym classes",
-  "Hiking / walking for exercise",
-  "Jogging / running",
-  "Tennis",
-  "Skiing / snowboarding",
-  "Other recreational sport",
-];
-const WALKING_AIDS_OPTS = [{label:"No walking aids needed",value:10},{label:"Cane occasionally",value:7},{label:"Cane routinely",value:4},{label:"Two canes or crutches",value:2},{label:"Walker or unable without support",value:0}];
-const STANDING_OPTS = [{label:"Unlimited",value:10},{label:"More than 30 minutes",value:8},{label:"10–30 minutes",value:6},{label:"5–10 minutes",value:4},{label:"Less than 5 minutes",value:2},{label:"Unable to stand",value:0}];
-const WALKING_DIST_OPTS = [{label:"Unlimited (more than 1 mile)",value:10},{label:"6–10 blocks",value:8},{label:"3–5 blocks",value:6},{label:"1–2 blocks",value:4},{label:"Around house only",value:2},{label:"Unable to walk",value:0}];
-const VAS_COLORS = ['#22C55E','#4ADE80','#86EFAC','#BEF264','#FCD34D','#FBBF24','#F59E0B','#FB923C','#F97316','#EF4444','#DC2626'];
-const STEP_NAMES = {1:"Contact Info",2:"Demographics",3:"KSS Symptoms",4:"KSS Satisfaction",5:"KSS Expectations",6:"KSS Walking & Standing",7:"KSS Standard Activities",8:"KSS Advanced Activities",9:"KSS Discretionary",10:"VAS Pain (Post-op)",11:"VAS Pain (Pre-op Recall)",12:"Global Satisfaction",13:"PROMIS LEF",14:"PROMIS Pain Intensity",15:"PROMIS Pain Interference",16:"EQ-5D",17:"Review"};
 
-function calcScores(d) {
-  const int=(v,def=0)=>parseInt(v??def)||0;
-  const sym=int(d.b1_walk)+int(d.b1_stairs)+int(d.b1_normal);
-  const sat=['b2_sit','b2_lie','b2_getup','b2_house','b2_rec'].reduce((s,k)=>s+int(d[k]),0);
-  const exp=['b3_pain','b3_func','b3_overall'].reduce((s,k)=>s+int(d[k]),0);
-  const wlk=int(d.b4_aids)+int(d.b4_stand)+int(d.b4_dist);
-  const std=['b4s_up','b4s_dn','b4s_kneel','b4s_rise','b4s_floor','b4s_lat'].reduce((s,k)=>s+int(d[k]),0);
-  const adv=['b4a_twist','b4a_floor','b4a_run','b4a_jump','b4a_stop'].reduce((s,k)=>s+int(d[k]),0);
-  const sel=d.disc_sel||[];
-  const disc=sel.slice(0,3).reduce((s,a)=>s+int(d['disc_'+a]),0);
-  const func=wlk+std+adv+disc;
-  const subjective=sym+sat+exp;
-  const vas=int(d.vas);
-  const vas_preop=d.vas_preop!==undefined?int(d.vas_preop):null;
-  const vas_delta=vas_preop!==null?vas-vas_preop:null;
-  const lefRaw=['lef1','lef2','lef3','lef4'].reduce((s,k)=>s+int(d[k]),0);
-  const piRaw=int(d.pi1)+int(d.pi2)+int(d.pi3);
-  const pifRaw=['pif1','pif2','pif3','pif4'].reduce((s,k)=>s+int(d[k]),0);
-  const eq5dSum=['eq_mob','eq_self','eq_usual','eq_pain','eq_anx'].reduce((s,k)=>s+int(d[k]),0);
-  const eqVas=int(d.eq_vas,50);
-  return {sym,sat,exp,wlk,std,adv,disc,func,subjective,vas,vas_preop,vas_delta,lefRaw,piRaw,pifRaw,eq5dSum,eqVas};
+/* ═══════════════════════════════════════
+   CONSTANTS
+   ═══════════════════════════════════════ */
+const ADMIN_PASSWORD = "ipbsnRNOH26";
+const TOTAL_STEPS = 11;
+
+const STEP_NAMES = {
+  1:"Your Details", 2:"About You", 3:"Pain Scores",
+  4:"Knee & Satisfaction", 5:"Expectations",
+  6:"Walking & Mobility", 7:"Activities",
+  8:"Pain Impact", 9:"Quality of Life",
+  10:"Other Activities", 11:"Review"
+};
+
+/* Option sets */
+const DIFF_OPTIONS = [
+  {label:"No difficulty",     value:5},
+  {label:"Mild difficulty",   value:4},
+  {label:"Moderate difficulty",value:3},
+  {label:"Severe difficulty", value:2},
+  {label:"Needs help",        value:1},
+  {label:"Unable to do",      value:0},
+];
+// compact labels for dual-column layout
+const DIFF_SHORT = ["No difficulty","Mild","Moderate","Severe","Needs help","Unable"];
+
+const SAT_OPTIONS = [
+  {label:"Very Satisfied",   value:8},{label:"Satisfied",   value:6},
+  {label:"Neutral",          value:4},{label:"Dissatisfied",value:2},
+  {label:"Very Dissatisfied",value:0},
+];
+const EXP_OPTIONS = [
+  {label:"Much better than expected", value:5},
+  {label:"Better than expected",      value:4},
+  {label:"Same as expected",          value:3},
+  {label:"Worse than expected",       value:2},
+  {label:"Much worse than expected",  value:1},
+];
+const PIF_OPTIONS = [
+  {label:"Not at all", value:1},{label:"A little bit",value:2},
+  {label:"Somewhat",   value:3},{label:"Quite a bit", value:4},
+  {label:"Very much",  value:5},
+];
+const PIF_SHORT = ["Not at all","A little","Somewhat","Quite a bit","Very much"];
+const EQ5D_OPTIONS = [
+  {label:"No problems",              value:1},
+  {label:"Slight problems",          value:2},
+  {label:"Moderate problems",        value:3},
+  {label:"Severe problems",          value:4},
+  {label:"Extreme / unable to",      value:5},
+];
+const EQ5D_SHORT = ["None","Slight","Moderate","Severe","Extreme"];
+
+const WALKING_AIDS_OPTS = [
+  {label:"No walking aids needed",  value:10},
+  {label:"Cane occasionally",       value:7},
+  {label:"Cane routinely",          value:4},
+  {label:"Two canes or crutches",   value:2},
+  {label:"Walker / unable",         value:0},
+];
+const STANDING_OPTS = [
+  {label:"Unlimited",         value:10},{label:"More than 30 min",value:8},
+  {label:"10–30 minutes",     value:6}, {label:"5–10 minutes",    value:4},
+  {label:"Less than 5 min",   value:2}, {label:"Unable to stand", value:0},
+];
+const WALKING_DIST_OPTS = [
+  {label:"Unlimited (>1 mile)", value:10},{label:"6–10 blocks",       value:8},
+  {label:"3–5 blocks",          value:6}, {label:"1–2 blocks",         value:4},
+  {label:"Around house only",   value:2}, {label:"Unable to walk",     value:0},
+];
+const DISC_ACTIVITIES = [
+  "Walking / leisure walks","Shopping / errands on foot","Light housework",
+  "Cooking / standing in kitchen","Visiting family / grandchildren",
+  "Travelling / day trips","Church / community activities","Volunteering",
+  "Gardening / yard work","Swimming","Cycling","Dancing","Golf",
+  "Bowls / lawn bowls","Yoga / Pilates / stretching","Aerobics / gym classes",
+  "Hiking / walking for exercise","Jogging / running","Tennis",
+  "Skiing / snowboarding","Other sport",
+];
+const VAS_COLORS = ['#22C55E','#4ADE80','#86EFAC','#BEF264','#FCD34D','#FBBF24','#F59E0B','#FB923C','#F97316','#EF4444','#DC2626'];
+
+/* ═══════════════════════════════════════
+   SCORING
+   PROMIS LEF is derived from KSS activity answers — no separate PROMIS section needed.
+   PROMIS Pain Intensity is derived from VAS + walking pain + stair pain.
+   ═══════════════════════════════════════ */
+function calcScores(d, suffix='') {
+  const s = suffix; // '' = post-op, '_pre' = pre-op
+  const int = (v, def=0) => parseInt(v ?? def) || 0;
+  const key = k => k + s; // e.g. 'b1_walk' or 'b1_walk_pre'
+
+  /* KSS B1 Symptoms (0-25) */
+  const sym = int(d[key('b1_walk')]) + int(d[key('b1_stairs')]) +
+              (s===''?int(d.b1_normal):0); // "feels normal" only post-op
+
+  /* KSS B2 Satisfaction (0-40) */
+  const sat = ['b2_sit','b2_lie','b2_getup','b2_house','b2_rec']
+    .reduce((t,k)=>t+int(d[key(k)]),0);
+
+  /* KSS B3 Expectations (0-15) — post-op only */
+  const exp = s==='' ? ['b3_pain','b3_func','b3_overall'].reduce((t,k)=>t+int(d[k]),0) : 0;
+
+  /* KSS B4a Walking & Standing (0-30) */
+  const wlk = int(d[key('b4_aids')]) + int(d[key('b4_stand')]) + int(d[key('b4_dist')]);
+
+  /* KSS B4b Standard Activities (0-30) — includes car & housework */
+  const std = ['b4s_up','b4s_dn','b4s_kneel','b4s_rise','b4s_floor','b4s_lat']
+    .reduce((t,k)=>t+int(d[key(k)]),0);
+
+  /* KSS B4c Advanced Activities (0-25) */
+  const adv = ['b4a_twist','b4a_floor','b4a_run','b4a_jump','b4a_stop']
+    .reduce((t,k)=>t+int(d[key(k)]),0);
+
+  /* KSS B4d Discretionary — post-op only */
+  const sel = s==='' ? (d.disc_sel||[]) : [];
+  const disc = sel.slice(0,3).reduce((t,a)=>t+int(d['disc_'+a]),0);
+
+  const func = wlk + std + adv + disc;
+  const subjective = sym + sat + exp;
+
+  /* VAS */
+  const vas = s==='' ? int(d.vas) : int(d.vas_pre);
+
+  /* ─── PROMIS LEF derived from KSS answers ───
+     Map KSS 5-scale difficulty to PROMIS 1–5:
+       5→5, 4→4, 3→3, 2→2, 1/0→1
+     Map standing opts to PROMIS: ≥8pts→5, 6→4, 4→3, 2→2, 0→1 */
+  const diffToLef = v => v >= 1 ? v : 1;
+  const standToLef = v => v>=8?5 : v>=6?4 : v>=4?3 : v>=2?2 : 1;
+
+  const lef1 = diffToLef(int(d[key('b4s_up')]));           // stairs
+  const lef2 = diffToLef(int(d[key('housework')]));         // heavy housework
+  const lef3 = diffToLef(int(d[key('car')]));               // get in/out car
+  const lef4 = standToLef(int(d[key('b4_stand')]));         // stand 30 min
+  const lefRaw = lef1 + lef2 + lef3 + lef4;               // range 4–20
+
+  /* ─── PROMIS Pain Intensity derived from pain questions ───
+     pi1 (worst)   = VAS (overall worst pain)
+     pi2 (average) = walking pain (b1_walk)
+     pi3 (current) = stair pain proxy (b1_stairs) — post-op has explicit pi3 */
+  const pi1 = vas; // VAS as worst pain (0-10)
+  const pi2 = int(d[key('b1_walk')]); // walking pain as average
+  const pi3 = s==='' ? int(d.pi3) : int(d[key('b1_stairs')]); // current / stair
+  const piRaw = pi1 + pi2 + pi3; // range 0–30
+
+  /* PROMIS Pain Interference (asked directly, side-by-side) */
+  const pifRaw = ['pif1','pif2','pif3','pif4'].reduce((t,k)=>t+int(d[key(k)]),0);
+
+  /* EQ-5D */
+  const eq5dSum = ['eq_mob','eq_self','eq_usual','eq_pain','eq_anx']
+    .reduce((t,k)=>t+int(d[key(k)]),0);
+  const eqVas = s==='' ? int(d.eq_vas,50) : int(d.eq_vas_pre,50);
+
+  return {sym,sat,exp,wlk,std,adv,disc,func,subjective,
+    vas,lefRaw,piRaw,pifRaw,eq5dSum,eqVas};
+}
+
+function buildRow(rec) {
+  const d = rec.data;
+  const sc = calcScores(d,'');
+  const scPre = calcScores(d,'_pre');
+  return {
+    token: rec.token, status: rec.status, timestamp: rec.timestamp,
+    last_step: STEP_NAMES[rec.lastStep] || String(rec.lastStep),
+    contact_name:  d.contact_name||'',  contact_email: d.contact_email||'',
+    contact_phone: d.contact_phone||'', survey_date:   d.survey_date||'',
+    dob:      d.dob==='dk'?'NK':(d.dob||''),  sex: d.sex||'',
+    height:   d.height_ft==='dk'?'NK':`${d.height_ft||''}'${d.height_in||''}"`,
+    weight:   d.weight==='dk'?'NK':String(d.weight||''),
+    ethnicity: d.ethnicity||'', surgeon: d.surgeon==='dk'?'NK':(d.surgeon||''), side: d.side||'',
+    // Post-op KSS
+    kss_sym: sc.sym, kss_sat: sc.sat, kss_exp: sc.exp,
+    kss_wlk: sc.wlk, kss_std: sc.std, kss_adv: sc.adv, kss_disc: sc.disc,
+    kss_func: sc.func, kss_subj: sc.subjective,
+    // Post-op other
+    vas_postop: sc.vas, global_sat: d.global_sat||'',
+    promis_lef: sc.lefRaw, promis_pi: sc.piRaw, promis_pif: sc.pifRaw,
+    eq_mob: d.eq_mob, eq_self: d.eq_self, eq_usual: d.eq_usual,
+    eq_pain: d.eq_pain, eq_anx: d.eq_anx, eq5d_sum: sc.eq5dSum, eq_vas: sc.eqVas,
+    // Pre-op recall scores
+    pre_kss_sym: scPre.sym, pre_kss_sat: scPre.sat,
+    pre_kss_wlk: scPre.wlk, pre_kss_std: scPre.std, pre_kss_adv: scPre.adv,
+    pre_kss_func: scPre.func, pre_kss_subj: scPre.subjective,
+    pre_vas: scPre.vas, pre_promis_lef: scPre.lefRaw,
+    pre_promis_pi: scPre.piRaw, pre_promis_pif: scPre.pifRaw,
+    pre_eq5d_sum: scPre.eq5dSum, pre_eq_vas: scPre.eqVas,
+    // Deltas (post - pre)
+    delta_kss_func: sc.func - scPre.func,
+    delta_vas: sc.vas - scPre.vas,
+    delta_promis_lef: sc.lefRaw - scPre.lefRaw,
+    delta_pif: sc.pifRaw - scPre.pifRaw,
+  };
 }
 
 function genToken() {
-  const ts=Date.now().toString(36).toUpperCase(),rand=Math.random().toString(36).slice(2,6).toUpperCase();
-  return `KNE-${ts}-${rand}`;
+  return `KNE-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;
 }
 
+/* ═══════════════════════════════════════
+   UI ATOMS
+   ═══════════════════════════════════════ */
 function ProgressBar({step,total}) {
-  const pct=Math.round((step/total)*100);
+  const pct = Math.round((step/total)*100);
   return (
     <div style={{marginBottom:20}}>
-      <div style={{display:'flex',justifyContent:'space-between',fontSize:12,fontWeight:500,color:'#9CA3AF',marginBottom:6}}>
+      <div style={{display:'flex',justifyContent:'space-between',fontSize:12,fontWeight:500,color:'#9CA3AF',marginBottom:5}}>
         <span>{STEP_NAMES[step]||''}</span><span>Step {step} of {total} · {pct}%</span>
       </div>
-      <div style={{height:6,background:'#E5E7EB',borderRadius:3,overflow:'hidden'}}>
+      <div style={{height:5,background:'#E5E7EB',borderRadius:3,overflow:'hidden'}}>
         <div className="prog-bar" style={{height:'100%',width:`${pct}%`,background:'linear-gradient(90deg,#1B4E7A,#2E7DAF)',borderRadius:3}}/>
       </div>
     </div>
@@ -230,154 +322,220 @@ function ProgressBar({step,total}) {
 
 function SectionHeader({tag,title,subtitle}) {
   return (
-    <div style={{marginBottom:24}}>
-      {tag&&<p style={{fontSize:12,fontWeight:600,letterSpacing:'.08em',color:'#2E7DAF',textTransform:'uppercase',marginBottom:4}}>{tag}</p>}
-      <h2 className="serif" style={{fontSize:24,fontWeight:700,color:'#111827',lineHeight:1.25,marginBottom:subtitle?6:0}}>{title}</h2>
-      {subtitle&&<p style={{fontSize:15,color:'#6B7280',lineHeight:1.5}}>{subtitle}</p>}
+    <div style={{marginBottom:20}}>
+      {tag&&<p style={{fontSize:11,fontWeight:600,letterSpacing:'.08em',color:'#2E7DAF',textTransform:'uppercase',marginBottom:3}}>{tag}</p>}
+      <h2 className="serif" style={{fontSize:22,fontWeight:700,color:'#111827',lineHeight:1.25,marginBottom:subtitle?5:0}}>{title}</h2>
+      {subtitle&&<p style={{fontSize:14,color:'#6B7280',lineHeight:1.5}}>{subtitle}</p>}
     </div>
   );
 }
 
-function OptBtn({label,active,onClick}) {
-  return <button type="button" className={`opt-btn${active?' active':''}`} onClick={onClick}>{label}</button>;
+function DualHeader() {
+  return (
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+      <div style={{background:'#DBEAFE',borderRadius:10,padding:'7px 10px',textAlign:'center',fontSize:12,fontWeight:700,color:'#1E40AF',letterSpacing:'.04em'}}>🔵 AFTER surgery</div>
+      <div style={{background:'#EDE9FE',borderRadius:10,padding:'7px 10px',textAlign:'center',fontSize:12,fontWeight:700,color:'#6D28D9',letterSpacing:'.04em'}}>🟣 BEFORE surgery</div>
+    </div>
+  );
 }
 
 function NavBtns({onBack,onNext,nextLabel='Continue →',disabled=false}) {
   return (
-    <div style={{display:'flex',gap:10,marginTop:24}}>
+    <div style={{display:'flex',gap:10,marginTop:22}}>
       {onBack&&<button type="button" className="btn-secondary" onClick={onBack}>← Back</button>}
       <button type="button" className="btn-primary" onClick={onNext} disabled={disabled}>{nextLabel}</button>
     </div>
   );
 }
 
-function ScoreBadge({label,score,max}) {
-  return (
-    <div className="score-badge" style={{marginTop:16}}>
-      <p style={{fontSize:12,color:'#6B7280',marginBottom:2}}>{label}</p>
-      <p style={{fontSize:28,fontWeight:700,color:'#1B4E7A',fontFamily:'Fraunces,serif'}}>{score}<span style={{fontSize:14,fontWeight:400,color:'#9CA3AF'}}>/{max}</span></p>
-    </div>
-  );
-}
-
-function SliderField({label,sublabel,value,min=0,max=10,onChange,leftLabel,rightLabel,colorClass,accentColor}) {
-  const pct=((value-min)/(max-min))*100,col=accentColor||'#1B4E7A';
-  return (
-    <div style={{marginBottom:20}}>
-      {label&&<label style={{display:'block',fontWeight:600,color:'#1F2937',marginBottom:4}}>{label}</label>}
-      {sublabel&&<p style={{fontSize:13,color:'#9CA3AF',marginBottom:8}}>{sublabel}</p>}
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-        <span style={{fontSize:12,color:'#9CA3AF'}}>{leftLabel??min}</span>
-        <span style={{fontSize:32,fontWeight:700,color:col,fontFamily:'Fraunces,serif',lineHeight:1}}>{value}</span>
-        <span style={{fontSize:12,color:'#9CA3AF'}}>{rightLabel??max}</span>
-      </div>
-      <input type="range" className={`vas-slider${colorClass?' '+colorClass:''}`} min={min} max={max} value={value} style={{'--pct':`${pct}%`}} onChange={e=>onChange(Number(e.target.value))}/>
-    </div>
-  );
-}
-
 function FormField({label,required,error,children,hint}) {
   return (
-    <div style={{marginBottom:16}}>
-      <label style={{display:'block',fontSize:14,fontWeight:500,color:'#374151',marginBottom:6}}>
+    <div style={{marginBottom:14}}>
+      <label style={{display:'block',fontSize:14,fontWeight:500,color:'#374151',marginBottom:5}}>
         {label}{required&&<span style={{color:'#EF4444'}}> *</span>}
-        {hint&&<span style={{fontWeight:400,color:'#9CA3AF',marginLeft:6,fontSize:13}}>({hint})</span>}
+        {hint&&<span style={{fontWeight:400,color:'#9CA3AF',marginLeft:5,fontSize:12}}>({hint})</span>}
       </label>
       {children}
-      {error&&<p style={{fontSize:12,color:'#EF4444',marginTop:4}}>{error}</p>}
+      {error&&<p style={{fontSize:12,color:'#EF4444',marginTop:3}}>{error}</p>}
     </div>
   );
 }
 
+/* Dual slider: post=blue, pre=purple */
+function DualSlider({label, postKey, preKey, d, set, min=0, max=10}) {
+  const postVal = Number(d[postKey] ?? 5);
+  const preVal  = Number(d[preKey]  ?? 5);
+  const postPct = ((postVal-min)/(max-min))*100;
+  const prePct  = ((preVal -min)/(max-min))*100;
+  return (
+    <div style={{marginBottom:20}}>
+      <p style={{fontWeight:600,color:'#1F2937',marginBottom:10}}>{label}</p>
+      <div className="dual-grid">
+        <div className="post-panel">
+          <div className="post-label">After surgery</div>
+          <div style={{fontSize:28,fontWeight:700,fontFamily:'Fraunces,serif',color:VAS_COLORS[postVal],textAlign:'center',lineHeight:1,marginBottom:6}}>{postVal}</div>
+          <input type="range" className="vas-slider" min={min} max={max} value={postVal}
+            style={{'--pct':`${postPct}%`}} onChange={e=>set(postKey,Number(e.target.value))}/>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#9CA3AF',marginTop:4}}>
+            <span>No pain</span><span>Worst</span>
+          </div>
+        </div>
+        <div className="pre-panel">
+          <div className="pre-label">Before surgery</div>
+          <div style={{fontSize:28,fontWeight:700,fontFamily:'Fraunces,serif',color:VAS_COLORS[preVal],textAlign:'center',lineHeight:1,marginBottom:6}}>{preVal}</div>
+          <input type="range" className="vas-slider pre" min={min} max={max} value={preVal}
+            style={{'--pct':`${prePct}%`}} onChange={e=>set(preKey,Number(e.target.value))}/>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#9CA3AF',marginTop:4}}>
+            <span>No pain</span><span>Worst</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Dual buttons: compact side-by-side */
+function DualButtons({label, postKey, preKey, options, shortLabels, d, set}) {
+  const labels = shortLabels || options.map(o=>o.label);
+  return (
+    <div style={{marginBottom:18}}>
+      <p style={{fontWeight:600,color:'#1F2937',marginBottom:8,fontSize:14}}>{label}</p>
+      <div className="dual-grid">
+        <div>
+          {options.map((o,i)=>(
+            <button key={o.value} type="button"
+              className={`d-btn${Number(d[postKey])===o.value?' p-active':''}`}
+              onClick={()=>set(postKey,o.value)}>{labels[i]}</button>
+          ))}
+        </div>
+        <div>
+          {options.map((o,i)=>(
+            <button key={o.value} type="button"
+              className={`d-btn${Number(d[preKey])===o.value?' r-active':''}`}
+              onClick={()=>set(preKey,o.value)}>{labels[i]}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Delta badge shown between sections */
+function DeltaBadge({postKey, preKey, d, label='Change', lowerIsBetter=true}) {
+  if (d[postKey]===undefined || d[preKey]===undefined) return null;
+  const delta = Number(d[postKey]) - Number(d[preKey]);
+  if (delta===0) return null;
+  const improved = lowerIsBetter ? delta<0 : delta>0;
+  const col = improved ? '#16A34A' : '#DC2626';
+  const sign = delta>0 ? '+' : '';
+  return (
+    <div style={{background:improved?'#F0FDF4':'#FEF2F2',border:`1px solid ${improved?'#BBF7D0':'#FCA5A5'}`,borderRadius:10,padding:'6px 12px',marginBottom:12,display:'flex',justifyContent:'space-between',alignItems:'center',fontSize:13}}>
+      <span style={{color:'#6B7280'}}>{label}</span>
+      <span style={{fontWeight:700,color:col}}>{sign}{delta} {improved?'✓':''}</span>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   STEP 0: WELCOME
+   ═══════════════════════════════════════ */
 function Welcome({onStart}) {
   return (
-    <div className="fade-up" style={{textAlign:'center',padding:'24px 0'}}>
-      <div style={{width:68,height:68,background:'linear-gradient(135deg,#1B4E7A,#2E7DAF)',borderRadius:20,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',boxShadow:'0 8px 24px rgba(27,78,122,.25)'}}>
-        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="1.8"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+    <div className="fade-up" style={{textAlign:'center',padding:'20px 0'}}>
+      <div style={{width:64,height:64,background:'linear-gradient(135deg,#1B4E7A,#2E7DAF)',borderRadius:18,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 18px',boxShadow:'0 6px 20px rgba(27,78,122,.25)'}}>
+        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
       </div>
-      <h1 className="serif" style={{fontSize:32,fontWeight:700,color:'#111827',marginBottom:8}}>Knee Outcomes Survey</h1>
-      <p style={{fontSize:15,color:'#6B7280',maxWidth:340,margin:'0 auto 24px',lineHeight:1.6}}>This survey collects information about your knee symptoms and quality of life following surgery.</p>
-      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:16,padding:'16px 20px',textAlign:'left',maxWidth:340,margin:'0 auto 28px'}}>
-        {[['⏱','Approximately 12–15 minutes'],['📱','Works on mobile or desktop'],['🔒','Responses are confidential'],['🦴','Answer about your operated knee'],['📊','Includes pre-op recall questions']].map(([i,t])=>(
-          <div key={t} style={{display:'flex',alignItems:'center',gap:10,marginBottom:8,fontSize:14,color:'#1E3A5F'}}><span>{i}</span><span>{t}</span></div>
+      <h1 className="serif" style={{fontSize:30,fontWeight:700,color:'#111827',marginBottom:8}}>Knee Outcomes Survey</h1>
+      <p style={{fontSize:15,color:'#6B7280',maxWidth:320,margin:'0 auto 20px',lineHeight:1.6}}>This survey asks about your knee and quality of life following surgery.</p>
+      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:16,padding:'14px 18px',textAlign:'left',maxWidth:320,margin:'0 auto 24px'}}>
+        {[['⏱','About 10 minutes'],['📱','Works on any phone or computer'],['🔵🟣','Each question: answer for NOW and BEFORE surgery'],['🔒','Your answers are confidential']].map(([i,t])=>(
+          <div key={t} style={{display:'flex',gap:10,marginBottom:7,fontSize:14,color:'#1E3A5F',alignItems:'flex-start'}}><span style={{marginTop:1}}>{i}</span><span>{t}</span></div>
         ))}
       </div>
-      <button className="btn-primary" style={{maxWidth:340,width:'100%',fontSize:17}} onClick={onStart}>Begin Survey →</button>
+      <button className="btn-primary" style={{maxWidth:320,width:'100%',fontSize:17}} onClick={onStart}>Begin Survey →</button>
     </div>
   );
 }
 
+/* ═══════════════════════════════════════
+   STEP 1: CONTACT INFO
+   ═══════════════════════════════════════ */
 function ContactInfo({d,set,token,onNext}) {
   const [errors,setErrors]=useState({});
   const next=()=>{
     const e={};
-    if(!d.contact_name||!d.contact_name.trim()) e.contact_name='Please enter your full name';
-    if(!d.contact_email||!d.contact_email.trim()) e.contact_email='Please enter your email address';
-    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.contact_email)) e.contact_email='Please enter a valid email address';
-    if(!d.contact_phone||!d.contact_phone.trim()) e.contact_phone='Please enter your phone number';
-    if(!d.survey_date) e.survey_date='Please enter today\'s date';
+    if(!(d.contact_name||'').trim()) e.name='Required';
+    if(!(d.contact_email||'').trim()) e.email='Required';
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.contact_email)) e.email='Please enter a valid email';
+    if(!(d.contact_phone||'').trim()) e.phone='Required';
+    if(!d.survey_date) e.date='Required';
     setErrors(e);
     if(!Object.keys(e).length) onNext();
   };
   return (
     <div className="fade-up">
-      <SectionHeader tag="Step 1 · Your Details" title="Before we begin" subtitle="We need a few details so we can match your responses to your records."/>
-      <div style={{background:'#FFF7ED',border:'1px solid #FED7AA',borderRadius:14,padding:'12px 16px',marginBottom:20,fontSize:13,color:'#92400E',display:'flex',gap:10}}>
-        <span>ℹ️</span><span>Your details are stored securely and never shared outside the research team.</span>
+      <SectionHeader tag="Step 1" title="Before we begin" subtitle="We need a few details to match your answers to your records."/>
+      <div style={{background:'#FFF7ED',border:'1px solid #FED7AA',borderRadius:12,padding:'10px 14px',marginBottom:18,fontSize:13,color:'#92400E',display:'flex',gap:8}}>
+        <span>🔒</span><span>Stored securely and never shared outside the research team.</span>
       </div>
-      <FormField label="Today's Date" required error={errors.survey_date}>
-        <input type="date" className={`inp${errors.survey_date?' err':''}`} value={d.survey_date||''} onChange={e=>set('survey_date',e.target.value)}/>
+      <FormField label="Today's Date" required error={errors.date}>
+        <input type="date" className={`inp${errors.date?' err':''}`} value={d.survey_date||''} onChange={e=>set('survey_date',e.target.value)}/>
       </FormField>
-      <FormField label="Full Name" required error={errors.contact_name}>
-        <input type="text" className={`inp${errors.contact_name?' err':''}`} placeholder="e.g. Jane Smith" value={d.contact_name||''} onChange={e=>set('contact_name',e.target.value)}/>
+      <FormField label="Full Name" required error={errors.name}>
+        <input type="text" className={`inp${errors.name?' err':''}`} placeholder="e.g. Jane Smith" value={d.contact_name||''} onChange={e=>set('contact_name',e.target.value)}/>
       </FormField>
-      <FormField label="Email Address" required error={errors.contact_email}>
-        <input type="email" className={`inp${errors.contact_email?' err':''}`} placeholder="e.g. jane@email.com" value={d.contact_email||''} onChange={e=>set('contact_email',e.target.value)}/>
+      <FormField label="Email Address" required error={errors.email}>
+        <input type="email" className={`inp${errors.email?' err':''}`} placeholder="e.g. jane@email.com" value={d.contact_email||''} onChange={e=>set('contact_email',e.target.value)}/>
       </FormField>
-      <FormField label="Phone Number" required error={errors.contact_phone}>
-        <input type="tel" className={`inp${errors.contact_phone?' err':''}`} placeholder="e.g. 07700 900000" value={d.contact_phone||''} onChange={e=>set('contact_phone',e.target.value)}/>
+      <FormField label="Phone Number" required error={errors.phone}>
+        <input type="tel" className={`inp${errors.phone?' err':''}`} placeholder="e.g. 07700 900000" value={d.contact_phone||''} onChange={e=>set('contact_phone',e.target.value)}/>
       </FormField>
-      <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:14,padding:'14px 16px',marginBottom:4,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:12,padding:'12px 14px',display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
         <div>
-          <p style={{fontSize:12,color:'#6B7280',marginBottom:2}}>Your survey reference</p>
-          <p style={{fontSize:17,fontWeight:700,fontFamily:'monospace',color:'#1B4E7A',letterSpacing:'.05em'}}>{token}</p>
+          <p style={{fontSize:11,color:'#6B7280',marginBottom:2}}>Your survey reference</p>
+          <p style={{fontSize:16,fontWeight:700,fontFamily:'monospace',color:'#1B4E7A',letterSpacing:'.05em'}}>{token}</p>
         </div>
-        <button type="button" onClick={()=>{try{navigator.clipboard.writeText(token);}catch(e){}}} style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'5px 10px',cursor:'pointer'}}>Copy</button>
+        <button type="button" onClick={()=>{try{navigator.clipboard.writeText(token);}catch(e){}}}
+          style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'5px 10px',cursor:'pointer'}}>Copy</button>
       </div>
-      <p style={{fontSize:12,color:'#9CA3AF',marginBottom:20}}>Keep this reference if you wish to query your data later.</p>
+      <p style={{fontSize:11,color:'#9CA3AF',marginBottom:18}}>Keep this if you wish to query your data later.</p>
       <NavBtns onNext={next}/>
     </div>
   );
 }
 
+/* ═══════════════════════════════════════
+   STEP 2: DEMOGRAPHICS
+   ═══════════════════════════════════════ */
 function Demographics({d,set,onBack,onNext}) {
   const [errors,setErrors]=useState({});
   const next=()=>{const e={};if(!d.sex)e.sex='Required';if(!d.side)e.side='Required';setErrors(e);if(!Object.keys(e).length)onNext();};
-  const DKToggle=({fieldKey})=>(
-    <button type="button" onClick={()=>set(fieldKey,d[fieldKey]==='dk'?'':'dk')} style={{marginTop:6,fontSize:12,color:d[fieldKey]==='dk'?'#fff':'#9CA3AF',background:d[fieldKey]==='dk'?'#6B7280':'#F9FAFB',border:`1px solid ${d[fieldKey]==='dk'?'#6B7280':'#E5E7EB'}`,borderRadius:8,padding:'4px 10px',cursor:'pointer',fontFamily:'DM Sans,sans-serif',transition:'all .15s'}}>
-      {d[fieldKey]==='dk'?'✓ Don\'t know / prefer not to say':'Don\'t know / prefer not to say'}
+  const DK=({k})=>(
+    <button type="button" onClick={()=>set(k,d[k]==='dk'?'':'dk')}
+      style={{marginTop:5,fontSize:11,color:d[k]==='dk'?'#fff':'#9CA3AF',background:d[k]==='dk'?'#6B7280':'#F9FAFB',border:`1px solid ${d[k]==='dk'?'#6B7280':'#E5E7EB'}`,borderRadius:7,padding:'3px 9px',cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>
+      {d[k]==='dk'?'✓ Don\'t know':'Don\'t know / prefer not to say'}
     </button>
   );
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section A · Demographics" title="About You" subtitle="Only sex and knee side are required — everything else is optional."/>
-      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:12,padding:'10px 14px',marginBottom:20,fontSize:13,color:'#1E40AF'}}>
-        💡 Unsure about any detail? Tap <strong>"Don't know"</strong> — you can still complete the survey.
+      <SectionHeader tag="Section A" title="About You" subtitle="Only sex and knee side are required."/>
+      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:10,padding:'9px 13px',marginBottom:18,fontSize:13,color:'#1E40AF'}}>
+        💡 Not sure? Tap "Don't know" — you can still complete the survey.
       </div>
       <FormField label="Date of Birth" hint="optional">
-        {d.dob==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:12,padding:'12px 16px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DKToggle fieldKey="dob"/></div>:
-        <><input type="date" className="inp" value={d.dob||''} onChange={e=>set('dob',e.target.value)}/><DKToggle fieldKey="dob"/></>}
+        {d.dob==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:11,padding:'11px 14px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DK k="dob"/></div>:
+        <><input type="date" className="inp" value={d.dob||''} onChange={e=>set('dob',e.target.value)}/><DK k="dob"/></>}
       </FormField>
       <FormField label="Height" hint="optional">
-        {d.height_ft==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:12,padding:'12px 16px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DKToggle fieldKey="height_ft"/></div>:
-        <><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:6}}>
-          <div style={{position:'relative'}}><input type="number" min="3" max="8" className="inp" placeholder="ft" value={d.height_ft||''} onChange={e=>set('height_ft',e.target.value)}/><span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',fontSize:13}}>ft</span></div>
-          <div style={{position:'relative'}}><input type="number" min="0" max="11" className="inp" placeholder="in" value={d.height_in||''} onChange={e=>set('height_in',e.target.value)}/><span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',fontSize:13}}>in</span></div>
-        </div><DKToggle fieldKey="height_ft"/></>}
+        {d.height_ft==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:11,padding:'11px 14px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DK k="height_ft"/></div>:
+        <><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:5}}>
+          <div style={{position:'relative'}}><input type="number" min="3" max="8" className="inp" placeholder="ft" value={d.height_ft||''} onChange={e=>set('height_ft',e.target.value)}/><span style={{position:'absolute',right:11,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',fontSize:12}}>ft</span></div>
+          <div style={{position:'relative'}}><input type="number" min="0" max="11" className="inp" placeholder="in" value={d.height_in||''} onChange={e=>set('height_in',e.target.value)}/><span style={{position:'absolute',right:11,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',fontSize:12}}>in</span></div>
+        </div><DK k="height_ft"/></>}
       </FormField>
       <FormField label="Weight" hint="optional — lbs">
-        {d.weight==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:12,padding:'12px 16px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DKToggle fieldKey="weight"/></div>:
-        <><div style={{position:'relative',marginBottom:6}}><input type="number" min="50" max="600" className="inp" placeholder="e.g. 165" value={d.weight||''} onChange={e=>set('weight',e.target.value)}/><span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',fontSize:13}}>lbs</span></div><DKToggle fieldKey="weight"/></>}
+        {d.weight==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:11,padding:'11px 14px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DK k="weight"/></div>:
+        <><div style={{position:'relative',marginBottom:5}}><input type="number" min="50" max="600" className="inp" placeholder="e.g. 165" value={d.weight||''} onChange={e=>set('weight',e.target.value)}/><span style={{position:'absolute',right:11,top:'50%',transform:'translateY(-50%)',color:'#9CA3AF',fontSize:12}}>lbs</span></div><DK k="weight"/></>}
       </FormField>
       <FormField label="Sex" required error={errors.sex}>
         <div style={{display:'flex',gap:8}}>{['Male','Female'].map(s=><button key={s} type="button" className={`pill-btn${d.sex===s?' active':''}`} onClick={()=>set('sex',s)}>{s}</button>)}</div>
@@ -394,661 +552,591 @@ function Demographics({d,set,onBack,onNext}) {
         </select>
       </FormField>
       <FormField label="Surgeon Name" hint="optional">
-        {d.surgeon==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:12,padding:'12px 16px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DKToggle fieldKey="surgeon"/></div>:
-        <><input type="text" className="inp" placeholder="e.g. Mr. Smith" value={d.surgeon||''} onChange={e=>set('surgeon',e.target.value)} style={{marginBottom:6}}/><DKToggle fieldKey="surgeon"/></>}
+        {d.surgeon==='dk'?<div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:11,padding:'11px 14px',fontSize:14,color:'#9CA3AF'}}>Not provided</div><DK k="surgeon"/></div>:
+        <><input type="text" className="inp" placeholder="e.g. Mr. Smith" value={d.surgeon||''} onChange={e=>set('surgeon',e.target.value)} style={{marginBottom:5}}/><DK k="surgeon"/></>}
       </FormField>
       <NavBtns onBack={onBack} onNext={next}/>
     </div>
   );
 }
 
-function KSSSymptoms({d,set,onBack,onNext}) {
-  const walk=Number(d.b1_walk??0),stairs=Number(d.b1_stairs??0),score=walk+stairs+(Number(d.b1_normal)||0);
+/* ═══════════════════════════════════════
+   STEP 3: PAIN SCORES (side-by-side)
+   ═══════════════════════════════════════ */
+function PainSection({d,set,onBack,onNext}) {
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section B1 · KSS Symptoms" title="Pain & Knee Feeling" subtitle="Rate your knee symptoms during typical daily activities."/>
-      <SliderField label="Pain while walking on flat ground" sublabel="0 = no pain · 10 = worst imaginable" value={walk} min={0} max={10} leftLabel="No pain" rightLabel="Max pain" onChange={v=>set('b1_walk',v)}/>
-      <SliderField label="Pain going up or down stairs / inclines" sublabel="0 = no pain · 10 = worst pain" value={stairs} min={0} max={10} leftLabel="No pain" rightLabel="Max pain" onChange={v=>set('b1_stairs',v)}/>
-      <div style={{marginBottom:16}}>
-        <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>How often does your knee feel normal?</p>
+      <SectionHeader tag="Section B · Pain" title="Your Pain Levels" subtitle="For each question, use both sliders — one for how things are now, one for how they were before your surgery."/>
+      <DualHeader/>
+      <DualSlider label="Overall pain level (past 7 days)"
+        postKey="vas" preKey="vas_pre" d={d} set={set}/>
+      <DualSlider label="Pain when walking on flat ground"
+        postKey="b1_walk" preKey="b1_walk_pre" d={d} set={set}/>
+      <DualSlider label="Pain going up or down stairs"
+        postKey="b1_stairs" preKey="b1_stairs_pre" d={d} set={set}/>
+      {/* Current pain — post-op only */}
+      <div style={{marginBottom:18}}>
+        <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>What is your pain level <em>right now</em>?</p>
+        <div className="post-panel">
+          <div className="post-label">Current pain (post-op only)</div>
+          <div style={{fontSize:28,fontWeight:700,fontFamily:'Fraunces,serif',color:VAS_COLORS[Number(d.pi3??0)],textAlign:'center',lineHeight:1,marginBottom:6}}>{Number(d.pi3??0)}</div>
+          <input type="range" className="vas-slider" min={0} max={10} value={Number(d.pi3??0)}
+            style={{'--pct':`${Number(d.pi3??0)*10}%`}} onChange={e=>set('pi3',Number(e.target.value))}/>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#9CA3AF',marginTop:4}}><span>No pain</span><span>Worst</span></div>
+        </div>
+      </div>
+      <DeltaBadge postKey="vas" preKey="vas_pre" d={d} label="VAS overall change" lowerIsBetter={true}/>
+      <NavBtns onBack={onBack} onNext={onNext}/>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   STEP 4: KNEE FEELING + SATISFACTION
+   ═══════════════════════════════════════ */
+function KneeSatisfaction({d,set,onBack,onNext}) {
+  const SAT_QS = [
+    {postKey:'b2_sit',  preKey:'b2_sit_pre',  label:'Satisfaction when sitting?'},
+    {postKey:'b2_lie',  preKey:'b2_lie_pre',  label:'Satisfaction lying in bed?'},
+    {postKey:'b2_getup',preKey:'b2_getup_pre',label:'Satisfaction getting out of bed?'},
+    {postKey:'b2_house',preKey:'b2_house_pre',label:'Satisfaction doing household activities?'},
+    {postKey:'b2_rec',  preKey:'b2_rec_pre',  label:'Satisfaction during recreational activities?'},
+  ];
+  const satAnswered = SAT_QS.filter(q=>d[q.postKey]!==undefined&&d[q.preKey]!==undefined).length;
+  const ok = d.b1_normal!==undefined && satAnswered===5;
+  return (
+    <div className="fade-up">
+      <SectionHeader tag="Section B · Knee & Satisfaction" title="How Your Knee Feels" subtitle="Answer for NOW (after surgery) and BEFORE surgery."/>
+      {/* b1_normal — post-op only */}
+      <div style={{marginBottom:20,background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:14,padding:'14px'}}>
+        <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>How often does your knee feel <em>normal</em> now?</p>
+        <p style={{fontSize:12,color:'#6B7280',marginBottom:10}}>(Post-op only — this doesn't apply to before surgery)</p>
         {[{label:'Always',value:5},{label:'Sometimes',value:3},{label:'Never',value:0}].map(o=>(
-          <OptBtn key={o.value} label={o.label} active={Number(d.b1_normal)===o.value} onClick={()=>set('b1_normal',o.value)}/>
+          <button key={o.value} type="button" className={`opt-btn${Number(d.b1_normal)===o.value?' active':''}`} onClick={()=>set('b1_normal',o.value)}>{o.label}</button>
         ))}
       </div>
-      <ScoreBadge label="B1 Symptoms subtotal" score={score} max={25}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={d.b1_normal===undefined}/>
-    </div>
-  );
-}
-
-const SAT_QS=[{key:'b2_sit',label:'Satisfaction with your knee when sitting?'},{key:'b2_lie',label:'Satisfaction with your knee when lying in bed?'},{key:'b2_getup',label:'Satisfaction when getting out of bed in the morning?'},{key:'b2_house',label:'Satisfaction during light household activities?'},{key:'b2_rec',label:'Satisfaction during recreational activities?'}];
-function KSSSatisfaction({d,set,onBack,onNext}) {
-  const answered=SAT_QS.filter(q=>d[q.key]!==undefined).length;
-  const score=SAT_QS.reduce((s,q)=>s+Number(d[q.key]||0),0);
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section B2 · KSS Satisfaction" title="How Satisfied Are You?" subtitle="Thinking about your operated knee only…"/>
-      {SAT_QS.map((q,i)=>(
-        <div key={q.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{i+1}. {q.label}</p>
-          {SAT_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[q.key])===o.value} onClick={()=>set(q.key,o.value)}/>)}
-        </div>
+      <DualHeader/>
+      {SAT_QS.map(q=>(
+        <DualButtons key={q.postKey} label={q.label}
+          postKey={q.postKey} preKey={q.preKey}
+          options={SAT_OPTIONS} d={d} set={set}/>
       ))}
-      <ScoreBadge label={`B2 Satisfaction (${answered}/5 answered)`} score={score} max={40}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<5}/>
-    </div>
-  );
-}
-
-const EXP_QS=[{key:'b3_pain',label:'Pain relief vs. your pre-surgery expectations?'},{key:'b3_func',label:'Knee function vs. your pre-surgery expectations?'},{key:'b3_overall',label:'Overall outcome vs. your pre-surgery expectations?'}];
-function KSSExpectations({d,set,onBack,onNext}) {
-  const answered=EXP_QS.filter(q=>d[q.key]!==undefined).length;
-  const score=EXP_QS.reduce((s,q)=>s+Number(d[q.key]||0),0);
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section B3 · KSS Expectations" title="Meeting Expectations"/>
-      {EXP_QS.map((q,i)=>(
-        <div key={q.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{i+1}. {q.label}</p>
-          {EXP_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[q.key])===o.value} onClick={()=>set(q.key,o.value)}/>)}
-        </div>
-      ))}
-      <ScoreBadge label={`B3 Expectations (${answered}/3 answered)`} score={score} max={15}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<3}/>
-    </div>
-  );
-}
-
-function KSSWalking({d,set,onBack,onNext}) {
-  const score=Number(d.b4_aids||0)+Number(d.b4_stand||0)+Number(d.b4_dist||0);
-  const ok=d.b4_aids!==undefined&&d.b4_stand!==undefined&&d.b4_dist!==undefined;
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section B4a · KSS Functional" title="Walking & Standing" subtitle="Think about the past 4 weeks."/>
-      {[{label:'Walking aids',opts:WALKING_AIDS_OPTS,key:'b4_aids'},{label:'How long can you typically stand?',opts:STANDING_OPTS,key:'b4_stand'},{label:'How far can you typically walk?',opts:WALKING_DIST_OPTS,key:'b4_dist'}].map(({label,opts,key})=>(
-        <div key={key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{label}</p>
-          {opts.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[key])===o.value} onClick={()=>set(key,o.value)}/>)}
-        </div>
-      ))}
-      <ScoreBadge label="B4a Walking & Standing" score={score} max={30}/>
       <NavBtns onBack={onBack} onNext={onNext} disabled={!ok}/>
     </div>
   );
 }
 
-const STD_QS=[{key:'b4s_up',label:'Going up stairs'},{key:'b4s_dn',label:'Going down stairs'},{key:'b4s_kneel',label:'Kneeling or squatting'},{key:'b4s_rise',label:'Rising from a chair'},{key:'b4s_floor',label:'Getting up from the floor'},{key:'b4s_lat',label:'Moving sideways'}];
-function KSSStandard({d,set,onBack,onNext}) {
-  const answered=STD_QS.filter(q=>d[q.key]!==undefined).length;
-  const score=STD_QS.reduce((s,q)=>s+Number(d[q.key]||0),0);
+/* ═══════════════════════════════════════
+   STEP 5: EXPECTATIONS (post-op only)
+   ═══════════════════════════════════════ */
+function Expectations({d,set,onBack,onNext}) {
+  const EXP_QS = [
+    {key:'b3_pain',  label:'Pain relief — compared to what you hoped for?'},
+    {key:'b3_func',  label:'Knee function — compared to what you hoped for?'},
+    {key:'b3_overall',label:'Overall outcome — compared to what you hoped for?'},
+  ];
+  const answered = EXP_QS.filter(q=>d[q.key]!==undefined).length;
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section B4b · KSS Functional" title="Standard Activities" subtitle="In the past 4 weeks, how difficult was each activity due to your knee?"/>
-      {STD_QS.map((q,i)=>(
-        <div key={q.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{i+1}. {q.label}</p>
-          {DIFF_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[q.key])===o.value} onClick={()=>set(q.key,o.value)}/>)}
+      <SectionHeader tag="Section B · Expectations" title="Did Surgery Meet Your Expectations?" subtitle="These questions are about now only — how does the result compare to what you expected before the operation?"/>
+      {EXP_QS.map((q,i)=>(
+        <div key={q.key} style={{marginBottom:18}}>
+          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8,fontSize:14}}>{i+1}. {q.label}</p>
+          {EXP_OPTIONS.map(o=><button key={o.value} type="button" className={`opt-btn${Number(d[q.key])===o.value?' active':''}`} onClick={()=>set(q.key,o.value)}>{o.label}</button>)}
         </div>
       ))}
-      <ScoreBadge label={`B4b Standard Activities (${answered}/6)`} score={score} max={30}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<6}/>
+      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<3}/>
     </div>
   );
 }
 
-const ADV_QS=[{key:'b4a_twist',label:'Twisting or pivoting on your knee'},{key:'b4a_floor',label:'Getting up from a very low surface'},{key:'b4a_run',label:'Running'},{key:'b4a_jump',label:'Jumping'},{key:'b4a_stop',label:'Starting and stopping quickly'}];
-function KSSAdvanced({d,set,onBack,onNext}) {
-  const answered=ADV_QS.filter(q=>d[q.key]!==undefined).length;
-  const score=ADV_QS.reduce((s,q)=>s+Number(d[q.key]||0),0);
+/* ═══════════════════════════════════════
+   STEP 6: WALKING & MOBILITY (side-by-side)
+   ═══════════════════════════════════════ */
+function WalkingMobility({d,set,onBack,onNext}) {
+  const aidsAnswered = d.b4_aids!==undefined && d.b4_aids_pre!==undefined;
+  const standAnswered = d.b4_stand!==undefined && d.b4_stand_pre!==undefined;
+  const distAnswered  = d.b4_dist!==undefined  && d.b4_dist_pre!==undefined;
+  const ok = aidsAnswered && standAnswered && distAnswered;
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section B4c · KSS Functional" title="Advanced Activities" subtitle="In the past 4 weeks, how difficult was each activity due to your knee?"/>
-      {ADV_QS.map((q,i)=>(
-        <div key={q.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{i+1}. {q.label}</p>
-          {DIFF_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[q.key])===o.value} onClick={()=>set(q.key,o.value)}/>)}
-        </div>
+      <SectionHeader tag="Section C · Walking & Mobility" title="Getting Around" subtitle="Answer for NOW and BEFORE your surgery."/>
+      <DualHeader/>
+      <DualButtons label="Walking aids — what do you typically need?"
+        postKey="b4_aids" preKey="b4_aids_pre"
+        options={WALKING_AIDS_OPTS} shortLabels={["None needed","Cane occasionally","Cane routinely","Two canes/crutches","Walker / unable"]}
+        d={d} set={set}/>
+      <DualButtons label="How long can you typically stand?"
+        postKey="b4_stand" preKey="b4_stand_pre"
+        options={STANDING_OPTS} shortLabels={["Unlimited",">30 minutes","10–30 min","5–10 min","<5 min","Unable"]}
+        d={d} set={set}/>
+      <DualButtons label="How far can you typically walk?"
+        postKey="b4_dist" preKey="b4_dist_pre"
+        options={WALKING_DIST_OPTS} shortLabels={["Unlimited","6–10 blocks","3–5 blocks","1–2 blocks","Around house","Unable"]}
+        d={d} set={set}/>
+      <NavBtns onBack={onBack} onNext={onNext} disabled={!ok}/>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   STEP 7: ACTIVITIES — daily + advanced
+   Includes car & housework which ALSO feeds PROMIS LEF
+   ═══════════════════════════════════════ */
+function Activities({d,set,onBack,onNext}) {
+  const ACT_QS = [
+    {postKey:'b4s_up',   preKey:'b4s_up_pre',   label:'Going up stairs'},
+    {postKey:'b4s_dn',   preKey:'b4s_dn_pre',   label:'Going down stairs'},
+    {postKey:'car',      preKey:'car_pre',       label:'Getting in and out of a car'},
+    {postKey:'housework',preKey:'housework_pre', label:'Heavy work around the house (digging, lifting, moving furniture)'},
+    {postKey:'b4s_kneel',preKey:'b4s_kneel_pre',label:'Kneeling or squatting'},
+    {postKey:'b4s_rise', preKey:'b4s_rise_pre', label:'Rising from a chair'},
+    {postKey:'b4s_floor',preKey:'b4s_floor_pre',label:'Getting up from the floor'},
+    {postKey:'b4s_lat',  preKey:'b4s_lat_pre',  label:'Moving sideways'},
+    {postKey:'b4a_twist',preKey:'b4a_twist_pre',label:'Twisting or pivoting on your knee'},
+    {postKey:'b4a_floor',preKey:'b4a_floor_pre',label:'Getting up from a very low surface'},
+    {postKey:'b4a_run',  preKey:'b4a_run_pre',  label:'Running'},
+    {postKey:'b4a_jump', preKey:'b4a_jump_pre', label:'Jumping'},
+    {postKey:'b4a_stop', preKey:'b4a_stop_pre', label:'Starting and stopping quickly'},
+  ];
+  const answered = ACT_QS.filter(q=>d[q.postKey]!==undefined && d[q.preKey]!==undefined).length;
+  const ok = answered >= 13;
+  return (
+    <div className="fade-up">
+      <SectionHeader tag="Section D · Activities" title="Daily & Physical Activities" subtitle="How difficult is each activity due to your knee? Answer for NOW and BEFORE surgery."/>
+      <div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:10,padding:'9px 13px',marginBottom:14,fontSize:13,color:'#92400E'}}>
+        💡 <strong>Car and heavy housework</strong> questions also count towards your mobility score.
+      </div>
+      <DualHeader/>
+      {ACT_QS.map(q=>(
+        <DualButtons key={q.postKey} label={q.label}
+          postKey={q.postKey} preKey={q.preKey}
+          options={DIFF_OPTIONS} shortLabels={DIFF_SHORT}
+          d={d} set={set}/>
       ))}
-      <ScoreBadge label={`B4c Advanced Activities (${answered}/5)`} score={score} max={25}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<5}/>
+      <NavBtns onBack={onBack} onNext={onNext} disabled={!ok}/>
     </div>
   );
 }
 
-function KSSDiscretionary({d,set,onBack,onNext}) {
-  const sel=d.disc_sel||[];
-  const toggle=(act)=>sel.includes(act)?set('disc_sel',sel.filter(a=>a!==act)):sel.length<3&&set('disc_sel',[...sel,act]);
-  const discScore=sel.slice(0,3).reduce((s,a)=>s+Number(d['disc_'+a]||0),0);
-  const allRated=sel.length>0&&sel.every(a=>d['disc_'+a]!==undefined);
-  const canContinue=sel.length===0||allRated;
+/* ═══════════════════════════════════════
+   STEP 8: PAIN IMPACT / PROMIS PIF
+   ═══════════════════════════════════════ */
+function PainImpact({d,set,onBack,onNext}) {
+  const PIF_QS = [
+    {postKey:'pif1',preKey:'pif1_pre',label:'Day-to-day activities (work, errands, appointments)'},
+    {postKey:'pif2',preKey:'pif2_pre',label:'Work around the home'},
+    {postKey:'pif3',preKey:'pif3_pre',label:'Social activities (seeing friends, family, going out)'},
+    {postKey:'pif4',preKey:'pif4_pre',label:'Household chores'},
+  ];
+  const answered = PIF_QS.filter(q=>d[q.postKey]!==undefined&&d[q.preKey]!==undefined).length;
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section B4d · KSS Functional" title="Discretionary Activities" subtitle="Optional — select up to 3 recreational or everyday activities most important to you, then rate each."/>
-      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:12,padding:'10px 14px',marginBottom:16,fontSize:13,color:'#1E40AF'}}>
-        💡 This section is optional. If none of these apply to you, tap <strong>Continue</strong> to skip.
-      </div>
-      <p style={{fontSize:13,color:'#6B7280',marginBottom:10}}>{sel.length}/3 selected</p>
-      <div style={{display:'flex',flexWrap:'wrap',gap:8,marginBottom:20}}>
-        {DISC_ACTIVITIES.map(act=>{const isSel=sel.includes(act),isMax=!isSel&&sel.length>=3;return<button key={act} type="button" className={`tag-btn${isSel?' active':''}${isMax?' disabled':''}`} onClick={()=>!isMax&&toggle(act)}>{act}</button>;})}
-      </div>
-      {sel.length>0&&(
-        <div style={{background:'#F8FAFF',border:'1px solid #BFDBFE',borderRadius:16,padding:'16px 16px 4px'}}>
-          <p style={{fontSize:13,fontWeight:600,color:'#1B4E7A',marginBottom:12}}>Rate your ability for each selected activity:</p>
-          {sel.map(act=>(
-            <div key={act} style={{marginBottom:16}}>
-              <p style={{fontWeight:600,color:'#1F2937',marginBottom:6}}>{act}</p>
-              {DIFF_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d['disc_'+act])===o.value} onClick={()=>set('disc_'+act,o.value)}/>)}
-            </div>
-          ))}
-        </div>
-      )}
-      {sel.length>0&&<ScoreBadge label="B4d Discretionary" score={discScore} max={15}/>}
-      <NavBtns onBack={onBack} onNext={onNext} disabled={!canContinue}/>
-    </div>
-  );
-}
-
-function VASPostOp({d,set,onBack,onNext}) {
-  const val=Number(d.vas??5);
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section C · VAS Pain — Current" title="Pain Score: Now" subtitle="Rate your overall knee pain over the past 7 days."/>
-      <div style={{background:'#EFF6FF',border:'2px solid #BFDBFE',borderRadius:18,padding:'24px 20px',marginBottom:16}}>
-        <div style={{fontSize:13,fontWeight:600,color:'#1E40AF',textAlign:'center',marginBottom:4,textTransform:'uppercase',letterSpacing:'.06em'}}>POST-OPERATIVE PAIN</div>
-        <div style={{fontSize:64,fontWeight:700,fontFamily:'Fraunces,serif',color:VAS_COLORS[val],textAlign:'center',lineHeight:1}}>{val}</div>
-        <div style={{fontSize:13,color:'#9CA3AF',textAlign:'center',marginBottom:20}}>out of 10</div>
-        <input type="range" className="vas-slider" min={0} max={10} value={val} style={{'--pct':`${val*10}%`}} onChange={e=>set('vas',Number(e.target.value))}/>
-        <div style={{display:'flex',justifyContent:'space-between',marginTop:8}}>
-          <span style={{fontSize:12,color:'#9CA3AF'}}>No pain</span>
-          <span style={{fontSize:12,color:'#9CA3AF'}}>Worst pain imaginable</span>
-        </div>
-      </div>
-      <NavBtns onBack={onBack} onNext={onNext}/>
-    </div>
-  );
-}
-
-function VASPreOpRecall({d,set,onBack,onNext}) {
-  const postVal=Number(d.vas??5),preVal=Number(d.vas_preop??5),delta=postVal-preVal;
-  const deltaColor=delta<0?'#16A34A':delta>0?'#DC2626':'#6B7280';
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section C · VAS Pain — Pre-op Recall" title="Pain Score: Before Surgery" subtitle="Thinking back to before your surgery — what was your typical pain like?"/>
-      <div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:14,padding:'10px 16px',marginBottom:20,fontSize:13,color:'#92400E'}}>
-        ⚠️ <strong>Recall question:</strong> Please try to remember your pain in the weeks <em>before</em> your surgery.
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
-        <div className="vas-panel vas-panel-postop">
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:'.07em',color:'#1E40AF',textTransform:'uppercase',marginBottom:8}}>Your score now</div>
-          <div style={{fontSize:48,fontWeight:700,fontFamily:'Fraunces,serif',color:VAS_COLORS[postVal],textAlign:'center',lineHeight:1}}>{postVal}</div>
-          <div style={{fontSize:11,color:'#9CA3AF',textAlign:'center'}}>post-op / 10</div>
-          <div style={{marginTop:10,height:6,background:'rgba(255,255,255,.6)',borderRadius:3,overflow:'hidden'}}><div style={{height:'100%',width:`${postVal*10}%`,background:'#1B4E7A',borderRadius:3}}/></div>
-        </div>
-        <div className="vas-panel vas-panel-preop">
-          <div style={{fontSize:11,fontWeight:600,letterSpacing:'.07em',color:'#6D28D9',textTransform:'uppercase',marginBottom:8}}>Before surgery</div>
-          <div style={{fontSize:48,fontWeight:700,fontFamily:'Fraunces,serif',color:VAS_COLORS[preVal],textAlign:'center',lineHeight:1}}>{preVal}</div>
-          <div style={{fontSize:11,color:'#9CA3AF',textAlign:'center'}}>pre-op / 10</div>
-          <div style={{marginTop:10,height:6,background:'rgba(255,255,255,.6)',borderRadius:3,overflow:'hidden'}}><div style={{height:'100%',width:`${preVal*10}%`,background:'#7C3AED',borderRadius:3}}/></div>
-        </div>
-      </div>
-      <div style={{background:'#F9FAFB',border:'1px solid #E5E7EB',borderRadius:14,padding:'14px 16px',marginBottom:20,textAlign:'center'}}>
-        <div style={{fontSize:12,color:'#6B7280',marginBottom:4}}>Change from pre-op to now</div>
-        <div style={{fontSize:22,fontWeight:700,fontFamily:'Fraunces,serif',color:deltaColor}}>{delta<0?'−':delta>0?'+':''}{Math.abs(delta)} points</div>
-        <div style={{fontSize:13,color:deltaColor,fontWeight:500}}>{delta<0?`${Math.abs(delta)} point improvement`:delta>0?`${delta} point worsening`:'No change'}</div>
-      </div>
-      <div style={{background:'#F5F3FF',border:'2px solid #DDD6FE',borderRadius:18,padding:'20px'}}>
-        <p style={{fontWeight:600,color:'#4C1D95',marginBottom:4}}>Adjust your pre-operative pain recall:</p>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-          <span style={{fontSize:12,color:'#9CA3AF'}}>No pain</span>
-          <span style={{fontSize:32,fontWeight:700,fontFamily:'Fraunces,serif',color:'#7C3AED'}}>{preVal}</span>
-          <span style={{fontSize:12,color:'#9CA3AF'}}>Worst pain</span>
-        </div>
-        <input type="range" className="vas-slider preop" min={0} max={10} value={preVal} style={{'--pct':`${preVal*10}%`}} onChange={e=>set('vas_preop',Number(e.target.value))}/>
-      </div>
-      <NavBtns onBack={onBack} onNext={onNext}/>
-    </div>
-  );
-}
-
-function GlobalSat({d,set,onBack,onNext}) {
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section D · Overall Satisfaction" title="Surgery Outcome"/>
-      <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>Overall, how satisfied are you with the result of your knee surgery?</p>
-      {[{label:'Very satisfied',value:'very_satisfied'},{label:'Satisfied',value:'satisfied'},{label:'Neutral / unsure',value:'neutral'},{label:'Dissatisfied',value:'dissatisfied'},{label:'Very dissatisfied',value:'very_dissatisfied'}].map(o=>(
-        <OptBtn key={o.value} label={o.label} active={d.global_sat===o.value} onClick={()=>set('global_sat',o.value)}/>
-      ))}
-      <NavBtns onBack={onBack} onNext={onNext} disabled={!d.global_sat}/>
-    </div>
-  );
-}
-
-const LEF_QS=[{key:'lef1',label:'Are you able to go up and down stairs at a normal pace?'},{key:'lef2',label:'Are you able to do heavy work around the house (shovelling, digging)?'},{key:'lef3',label:'Are you able to get in and out of a car?'},{key:'lef4',label:'Are you able to stand in line or stand for 30 minutes?'}];
-function PROMISLef({d,set,onBack,onNext}) {
-  const answered=LEF_QS.filter(q=>d[q.key]!==undefined).length;
-  const raw=LEF_QS.reduce((s,q)=>s+Number(d[q.key]||0),0);
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section E1 · PROMIS® LEF" title="Lower Limb Ability" subtitle="In the past 7 days…"/>
-      {LEF_QS.map((q,i)=>(
-        <div key={q.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{i+1}. {q.label}</p>
-          {PROMIS_LEF_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[q.key])===o.value} onClick={()=>set(q.key,o.value)}/>)}
-        </div>
-      ))}
-      <ScoreBadge label={`PROMIS LEF Raw (${answered}/4) · Range 4–20`} score={raw} max={20}/>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<4}/>
-    </div>
-  );
-}
-
-function PROMISPainIntensity({d,set,onBack,onNext}) {
-  const qs=[{key:'pi1',label:'Pain at its WORST in the past 7 days?'},{key:'pi2',label:'Pain ON AVERAGE in the past 7 days?'},{key:'pi3',label:'Pain RIGHT NOW?'}];
-  const raw=qs.reduce((s,q)=>s+Number(d[q.key]||0),0);
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section E2 · PROMIS® Pain Intensity" title="Pain Intensity" subtitle="Rate knee pain on a 0–10 scale."/>
-      {qs.map((q,i)=><SliderField key={q.key} label={`${i+1}. ${q.label}`} value={Number(d[q.key]??0)} min={0} max={10} leftLabel="No pain" rightLabel="Worst pain" onChange={v=>set(q.key,v)}/>)}
-      <ScoreBadge label="PROMIS Pain Intensity Raw · Range 0–30" score={raw} max={30}/>
-      <NavBtns onBack={onBack} onNext={onNext}/>
-    </div>
-  );
-}
-
-const PIF_QS=[{key:'pif1',label:'How much did pain interfere with your day-to-day activities?'},{key:'pif2',label:'How much did pain interfere with work around the home?'},{key:'pif3',label:'How much did pain interfere with your social activities?'},{key:'pif4',label:'How much did pain interfere with your household chores?'}];
-function PROMISPainInterference({d,set,onBack,onNext}) {
-  const answered=PIF_QS.filter(q=>d[q.key]!==undefined).length;
-  const raw=PIF_QS.reduce((s,q)=>s+Number(d[q.key]||0),0);
-  return (
-    <div className="fade-up">
-      <SectionHeader tag="Section E3 · PROMIS® Pain Interference" title="Pain Interference" subtitle="In the past 7 days…"/>
+      <SectionHeader tag="Section E · Pain Impact" title="How Much Did Pain Get in the Way?" subtitle="In the past 7 days, how much did knee pain interfere with each of the following?"/>
+      <DualHeader/>
       {PIF_QS.map((q,i)=>(
-        <div key={q.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:600,color:'#1F2937',marginBottom:8}}>{i+1}. {q.label}</p>
-          {PROMIS_PIF_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[q.key])===o.value} onClick={()=>set(q.key,o.value)}/>)}
-        </div>
+        <DualButtons key={q.postKey} label={`${i+1}. ${q.label}`}
+          postKey={q.postKey} preKey={q.preKey}
+          options={PIF_OPTIONS} shortLabels={PIF_SHORT}
+          d={d} set={set}/>
       ))}
-      <ScoreBadge label={`PROMIS Pain Interference Raw (${answered}/4) · Range 4–20`} score={raw} max={20}/>
       <NavBtns onBack={onBack} onNext={onNext} disabled={answered<4}/>
     </div>
   );
 }
 
-const EQ_DOMAINS=[{key:'eq_mob',label:'Mobility',desc:'Your ability to walk about'},{key:'eq_self',label:'Self-Care',desc:'Washing or dressing yourself'},{key:'eq_usual',label:'Usual Activities',desc:'e.g. work, study, housework, family or leisure'},{key:'eq_pain',label:'Pain / Discomfort',desc:'Pain or discomfort you have'},{key:'eq_anx',label:'Anxiety / Depression',desc:'How anxious or depressed you feel'}];
-function EQ5D({d,set,onBack,onNext}) {
-  const answered=EQ_DOMAINS.filter(q=>d[q.key]!==undefined).length;
-  const eqVas=Number(d.eq_vas??50);
+/* ═══════════════════════════════════════
+   STEP 9: QUALITY OF LIFE — EQ-5D (side-by-side)
+   ═══════════════════════════════════════ */
+function QualityOfLife({d,set,onBack,onNext}) {
+  const EQ_QS = [
+    {postKey:'eq_mob',  preKey:'eq_mob_pre',  label:'Mobility', desc:'Your ability to walk about'},
+    {postKey:'eq_self', preKey:'eq_self_pre', label:'Self-Care', desc:'Washing or dressing yourself'},
+    {postKey:'eq_usual',preKey:'eq_usual_pre',label:'Usual Activities', desc:'Work, study, housework, family or leisure'},
+    {postKey:'eq_pain', preKey:'eq_pain_pre', label:'Pain / Discomfort', desc:'Pain or discomfort you have'},
+    {postKey:'eq_anx',  preKey:'eq_anx_pre',  label:'Anxiety / Depression', desc:'How anxious or depressed you feel'},
+  ];
+  const answered = EQ_QS.filter(q=>d[q.postKey]!==undefined&&d[q.preKey]!==undefined).length;
+  const eqVas = Number(d.eq_vas??50);
+  const eqVasPre = Number(d.eq_vas_pre??50);
+  const ok = answered===5;
   return (
     <div className="fade-up">
-      <SectionHeader tag="Section F · EQ-5D-5L" title="Health Status Today" subtitle="Please select the best description of your health TODAY."/>
-      {EQ_DOMAINS.map(dom=>(
-        <div key={dom.key} style={{marginBottom:20}}>
-          <p style={{fontWeight:700,color:'#111827',marginBottom:2}}>{dom.label}</p>
-          <p style={{fontSize:13,color:'#6B7280',marginBottom:8}}>{dom.desc}</p>
-          {EQ5D_OPTIONS.map(o=><OptBtn key={o.value} label={o.label} active={Number(d[dom.key])===o.value} onClick={()=>set(dom.key,o.value)}/>)}
+      <SectionHeader tag="Section F · Quality of Life" title="Your Overall Health" subtitle="Answer for TODAY (after surgery) and how you remember feeling BEFORE surgery."/>
+      <DualHeader/>
+      {EQ_QS.map(q=>(
+        <div key={q.postKey} style={{marginBottom:18}}>
+          <p style={{fontWeight:600,color:'#1F2937',fontSize:14,marginBottom:2}}>{q.label}</p>
+          <p style={{fontSize:12,color:'#6B7280',marginBottom:8}}>{q.desc}</p>
+          <DualButtons label="" postKey={q.postKey} preKey={q.preKey}
+            options={EQ5D_OPTIONS} shortLabels={EQ5D_SHORT} d={d} set={set}/>
         </div>
       ))}
-      <div style={{background:'#F8FAFF',border:'1px solid #BFDBFE',borderRadius:16,padding:'16px'}}>
-        <p style={{fontWeight:600,color:'#1F2937',marginBottom:4}}>EQ Visual Analogue Scale</p>
-        <p style={{fontSize:13,color:'#6B7280',marginBottom:12}}>How good or bad is your health TODAY? (0 = worst, 100 = best)</p>
-        <SliderField label="" value={eqVas} min={0} max={100} leftLabel="0 — Worst" rightLabel="100 — Best" onChange={v=>set('eq_vas',v)}/>
+      {/* EQ VAS dual */}
+      <div style={{marginBottom:18}}>
+        <p style={{fontWeight:600,color:'#1F2937',marginBottom:10}}>Rate your overall health (0 = worst, 100 = best)</p>
+        <div className="dual-grid">
+          <div className="post-panel">
+            <div className="post-label">After surgery</div>
+            <div style={{fontSize:28,fontWeight:700,fontFamily:'Fraunces,serif',color:'#1B4E7A',textAlign:'center',lineHeight:1,marginBottom:6}}>{eqVas}</div>
+            <input type="range" className="vas-slider" min={0} max={100} value={eqVas}
+              style={{'--pct':`${eqVas}%`}} onChange={e=>set('eq_vas',Number(e.target.value))}/>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#9CA3AF',marginTop:4}}><span>0 Worst</span><span>100 Best</span></div>
+          </div>
+          <div className="pre-panel">
+            <div className="pre-label">Before surgery</div>
+            <div style={{fontSize:28,fontWeight:700,fontFamily:'Fraunces,serif',color:'#7C3AED',textAlign:'center',lineHeight:1,marginBottom:6}}>{eqVasPre}</div>
+            <input type="range" className="vas-slider pre" min={0} max={100} value={eqVasPre}
+              style={{'--pct':`${eqVasPre}%`}} onChange={e=>set('eq_vas_pre',Number(e.target.value))}/>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#9CA3AF',marginTop:4}}><span>0 Worst</span><span>100 Best</span></div>
+          </div>
+        </div>
       </div>
-      <NavBtns onBack={onBack} onNext={onNext} disabled={answered<5}/>
+      <NavBtns onBack={onBack} onNext={onNext} disabled={!ok}/>
     </div>
   );
 }
 
-function Review({d,scores,onBack,onSubmit,submitting,submitError}) {
+/* ═══════════════════════════════════════
+   STEP 10: OTHER ACTIVITIES + GLOBAL SAT
+   ═══════════════════════════════════════ */
+function OtherActivities({d,set,onBack,onNext}) {
+  const sel = d.disc_sel||[];
+  const toggle = act => sel.includes(act)?set('disc_sel',sel.filter(a=>a!==act)):sel.length<3&&set('disc_sel',[...sel,act]);
+  const discOk = sel.length===0 || sel.every(a=>d['disc_'+a]!==undefined);
+  const ok = d.global_sat && discOk;
   return (
-    <div className="fade-up" style={{textAlign:'center',padding:'12px 0'}}>
-      <div style={{fontSize:56,marginBottom:16}}>🎉</div>
-      <h2 className="serif" style={{fontSize:28,fontWeight:700,color:'#111827',marginBottom:10}}>You're all done!</h2>
-      <p style={{fontSize:16,color:'#4B5563',lineHeight:1.65,maxWidth:340,margin:'0 auto 24px'}}>
-        Thank you for taking the time to answer all those questions. Your responses make a real difference to how we understand and improve knee surgery outcomes.
+    <div className="fade-up">
+      <SectionHeader tag="Section G · Other Activities & Satisfaction" title="Almost There!" subtitle="Two final questions."/>
+
+      {/* Global satisfaction */}
+      <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:14,padding:'16px',marginBottom:20}}>
+        <p style={{fontWeight:600,color:'#1F2937',marginBottom:10}}>Overall, how satisfied are you with the result of your knee surgery?</p>
+        {[{label:'Very satisfied',value:'very_satisfied'},{label:'Satisfied',value:'satisfied'},{label:'Neutral / unsure',value:'neutral'},{label:'Dissatisfied',value:'dissatisfied'},{label:'Very dissatisfied',value:'very_dissatisfied'}].map(o=>(
+          <button key={o.value} type="button" className={`opt-btn${d.global_sat===o.value?' active':''}`} onClick={()=>set('global_sat',o.value)}>{o.label}</button>
+        ))}
+      </div>
+
+      {/* Discretionary — optional */}
+      <div style={{background:'#F9FAFB',border:'1px solid #F3F4F6',borderRadius:14,padding:'16px'}}>
+        <p style={{fontWeight:600,color:'#1F2937',marginBottom:4}}>Leisure & recreational activities <span style={{fontWeight:400,color:'#9CA3AF',fontSize:13}}>(optional)</span></p>
+        <p style={{fontSize:13,color:'#6B7280',marginBottom:10}}>If any of these activities are important to you, select up to 3 and rate your ability now.</p>
+        <div style={{display:'flex',flexWrap:'wrap',gap:7,marginBottom:14}}>
+          {DISC_ACTIVITIES.map(act=>{const isSel=sel.includes(act),isMax=!isSel&&sel.length>=3;return<button key={act} type="button" className={`tag-btn${isSel?' active':''}${isMax?' disabled':''}`} onClick={()=>!isMax&&toggle(act)}>{act}</button>;})}
+        </div>
+        {sel.length>0&&(
+          <div style={{borderTop:'1px solid #E5E7EB',paddingTop:12}}>
+            <p style={{fontSize:13,fontWeight:600,color:'#1B4E7A',marginBottom:10}}>How difficult now due to your knee?</p>
+            {sel.map(act=>(
+              <div key={act} style={{marginBottom:14}}>
+                <p style={{fontWeight:500,color:'#1F2937',marginBottom:6,fontSize:14}}>{act}</p>
+                {DIFF_OPTIONS.map(o=><button key={o.value} type="button" className={`opt-btn${Number(d['disc_'+act])===o.value?' active':''}`} onClick={()=>set('disc_'+act,o.value)}>{o.label}</button>)}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <NavBtns onBack={onBack} onNext={onNext} disabled={!ok}/>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   STEP 11: REVIEW
+   ═══════════════════════════════════════ */
+function Review({onBack,onSubmit,submitting,submitError}) {
+  return (
+    <div className="fade-up" style={{textAlign:'center',padding:'8px 0'}}>
+      <div style={{fontSize:52,marginBottom:14}}>🎉</div>
+      <h2 className="serif" style={{fontSize:26,fontWeight:700,color:'#111827',marginBottom:10}}>You're all done!</h2>
+      <p style={{fontSize:15,color:'#4B5563',lineHeight:1.65,maxWidth:320,margin:'0 auto 20px'}}>
+        Thank you for taking the time to answer all those questions. Your responses make a real difference to how we improve knee surgery outcomes.
       </p>
-      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:18,padding:'20px',maxWidth:340,margin:'0 auto 28px',textAlign:'left'}}>
-        <p style={{fontWeight:600,color:'#1E3A5F',fontSize:15,marginBottom:12}}>Before you submit, just check:</p>
-        {['Are you happy with all your answers?','Did you answer about your operated knee?','Were your pain scores honest and accurate?'].map(q=>(
-          <div key={q} style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:10}}>
-            <span style={{fontSize:18,marginTop:1}}>✓</span>
-            <p style={{fontSize:14,color:'#374151',margin:0,lineHeight:1.5}}>{q}</p>
+      <div style={{background:'#F0F7FF',border:'1px solid #BFDBFE',borderRadius:16,padding:'18px',maxWidth:320,margin:'0 auto 24px',textAlign:'left'}}>
+        <p style={{fontWeight:600,color:'#1E3A5F',fontSize:14,marginBottom:10}}>Before you submit:</p>
+        {['Happy with all your answers?','Did you answer about your operated knee?','Did you give both BEFORE and AFTER answers?'].map(q=>(
+          <div key={q} style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:9}}>
+            <span style={{fontSize:16,marginTop:1}}>✓</span>
+            <p style={{fontSize:13,color:'#374151',margin:0,lineHeight:1.5}}>{q}</p>
           </div>
         ))}
       </div>
       {submitError&&(
-        <div style={{background:'#FEF2F2',border:'1px solid #FCA5A5',borderRadius:14,padding:'12px 16px',marginBottom:16,maxWidth:340,margin:'0 auto 16px',fontSize:14,color:'#DC2626'}}>
+        <div style={{background:'#FEF2F2',border:'1px solid #FCA5A5',borderRadius:12,padding:'11px 14px',marginBottom:14,maxWidth:320,margin:'0 auto 14px',fontSize:14,color:'#DC2626'}}>
           ⚠️ {submitError}
         </div>
       )}
-      <p style={{fontSize:13,color:'#9CA3AF',maxWidth:320,margin:'0 auto 24px',lineHeight:1.5}}>
-        If you want to change anything, use the back button. Otherwise, tap below to send your answers.
-      </p>
-      <div style={{display:'flex',gap:10,maxWidth:340,margin:'0 auto'}}>
-        <button type="button" className="btn-secondary" onClick={onBack} style={{flex:'0 0 auto',padding:'13px 20px'}} disabled={submitting}>← Go back</button>
+      <p style={{fontSize:12,color:'#9CA3AF',maxWidth:300,margin:'0 auto 20px',lineHeight:1.5}}>If you want to change anything, use the back button.</p>
+      <div style={{display:'flex',gap:10,maxWidth:320,margin:'0 auto'}}>
+        <button type="button" className="btn-secondary" onClick={onBack} disabled={submitting} style={{flex:'0 0 auto',padding:'13px 18px'}}>← Back</button>
         <button type="button" className="btn-primary" onClick={onSubmit} disabled={submitting}>
-          {submitting ? '⏳ Saving...' : 'Send my answers ✓'}
+          {submitting?'⏳ Saving...':'Send my answers ✓'}
         </button>
       </div>
     </div>
   );
 }
 
+/* ═══════════════════════════════════════
+   THANK YOU
+   ═══════════════════════════════════════ */
 function ThankYou({token}) {
   const [copied,setCopied]=useState(false);
-  const copy=()=>{
-    try{navigator.clipboard.writeText(token).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}
-    catch(e){
-      const el=document.createElement('textarea');
-      el.value=token;document.body.appendChild(el);el.select();
-      document.execCommand('copy');document.body.removeChild(el);
-      setCopied(true);setTimeout(()=>setCopied(false),2000);
-    }
-  };
+  const copy=()=>{try{navigator.clipboard.writeText(token).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}catch(e){}};
   return (
-    <div className="scale-in" style={{textAlign:'center',padding:'48px 0'}}>
-      <div style={{width:72,height:72,background:'linear-gradient(135deg,#22C55E,#16A34A)',borderRadius:22,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',boxShadow:'0 8px 24px rgba(34,197,94,.3)'}}>
-        <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+    <div className="scale-in" style={{textAlign:'center',padding:'40px 0'}}>
+      <div style={{width:68,height:68,background:'linear-gradient(135deg,#22C55E,#16A34A)',borderRadius:20,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 18px',boxShadow:'0 6px 20px rgba(34,197,94,.3)'}}>
+        <svg width="34" height="34" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
       </div>
-      <h1 className="serif" style={{fontSize:34,fontWeight:700,color:'#111827',marginBottom:10}}>Thank You!</h1>
-      <p style={{fontSize:15,color:'#6B7280',maxWidth:320,margin:'0 auto 20px',lineHeight:1.6}}>Your responses have been recorded. Your participation helps improve outcomes for future patients.</p>
-      <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:14,padding:'14px 20px',display:'inline-block',marginBottom:16}}>
-        <p style={{fontSize:12,color:'#6B7280',marginBottom:6}}>Your survey reference</p>
-        <p style={{fontSize:17,fontWeight:700,fontFamily:'monospace',color:'#1B4E7A',letterSpacing:'.05em',marginBottom:10,userSelect:'all'}}>{token}</p>
-        <button onClick={copy} style={{fontSize:13,fontWeight:600,color:copied?'#16A34A':'#1B4E7A',background:copied?'#DCFCE7':'#EFF6FF',border:`1px solid ${copied?'#86EFAC':'#BFDBFE'}`,borderRadius:8,padding:'6px 16px',cursor:'pointer',transition:'all .2s',fontFamily:'DM Sans,sans-serif'}}>
-          {copied ? '✓ Copied!' : 'Copy reference'}
+      <h1 className="serif" style={{fontSize:30,fontWeight:700,color:'#111827',marginBottom:8}}>Thank You!</h1>
+      <p style={{fontSize:15,color:'#6B7280',maxWidth:300,margin:'0 auto 18px',lineHeight:1.6}}>Your responses have been recorded. Your participation helps improve outcomes for future patients.</p>
+      <div style={{background:'#F8FAFF',border:'1px solid #E0E7FF',borderRadius:13,padding:'13px 18px',display:'inline-block',marginBottom:14}}>
+        <p style={{fontSize:11,color:'#6B7280',marginBottom:5}}>Your survey reference</p>
+        <p style={{fontSize:16,fontWeight:700,fontFamily:'monospace',color:'#1B4E7A',letterSpacing:'.05em',marginBottom:9}}>{token}</p>
+        <button onClick={copy} style={{fontSize:13,fontWeight:600,color:copied?'#16A34A':'#1B4E7A',background:copied?'#DCFCE7':'#EFF6FF',border:`1px solid ${copied?'#86EFAC':'#BFDBFE'}`,borderRadius:7,padding:'5px 14px',cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>
+          {copied?'✓ Copied!':'Copy reference'}
         </button>
       </div>
-      <p style={{fontSize:13,color:'#9CA3AF'}}>You may now close this window safely.</p>
+      <p style={{fontSize:12,color:'#9CA3AF'}}>You may now close this window safely.</p>
     </div>
   );
 }
 
+/* ═══════════════════════════════════════
+   ADMIN
+   ═══════════════════════════════════════ */
 function AdminLogin({onLogin}) {
   const [pw,setPw]=useState(''), [err,setErr]=useState('');
   const login=()=>pw===ADMIN_PASSWORD?onLogin():setErr('Incorrect password.');
   return (
-    <div className="fade-up" style={{maxWidth:360,margin:'48px auto',textAlign:'center'}}>
-      <div style={{width:52,height:52,background:'#1B4E7A',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px'}}>
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+    <div className="fade-up" style={{maxWidth:340,margin:'48px auto',textAlign:'center'}}>
+      <div style={{width:48,height:48,background:'#1B4E7A',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 14px'}}>
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
       </div>
-      <h2 className="serif" style={{fontSize:26,fontWeight:700,color:'#111827',marginBottom:6}}>Admin Access</h2>
-      <input type="password" className="inp" style={{marginBottom:err?8:12,textAlign:'center',letterSpacing:4}} placeholder="••••••••••••" value={pw} onChange={e=>{setPw(e.target.value);setErr('');}} onKeyDown={e=>e.key==='Enter'&&login()}/>
-      {err&&<p style={{fontSize:13,color:'#EF4444',marginBottom:10}}>{err}</p>}
+      <h2 className="serif" style={{fontSize:24,fontWeight:700,color:'#111827',marginBottom:5}}>Admin Access</h2>
+      <input type="password" className="inp" style={{marginBottom:err?7:11,textAlign:'center',letterSpacing:4}} placeholder="••••••••••••" value={pw}
+        onChange={e=>{setPw(e.target.value);setErr('');}} onKeyDown={e=>e.key==='Enter'&&login()}/>
+      {err&&<p style={{fontSize:13,color:'#EF4444',marginBottom:9}}>{err}</p>}
       <button className="btn-primary" style={{width:'100%'}} onClick={login}>Login →</button>
     </div>
   );
 }
 
 function AdminDashboard({localSubs,onLogout}) {
-  const [sheetSubs, setSheetSubs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
-  const [lastRefresh, setLastRefresh] = useState(null);
-
-const loadFromSupabase = useCallback(async () => {
-  setLoading(true); setLoadError('');
-  const records = await fetchFromSupabase();
-  if (records) {
-    const mapped = records.map(r => {
-      const stepNum = parseInt(
-        Object.keys(STEP_NAMES).find(k => STEP_NAMES[k] === r.last_step)
-      ) || 17;
-      return {
-        id: r.token, token: r.token,
-        timestamp: r.timestamp,
-        lastStep:  stepNum,
-        status:    r.status || 'partial',
-        data: {
-          contact_name:  r.contact_name  || '',
-          contact_email: r.contact_email || '',
-          contact_phone: r.contact_phone || '',
-          survey_date:   r.survey_date   || '',
-          dob:           r.dob       || '',
-          sex:           r.sex       || '',
-          height_ft:     r.height    || '',
-          weight:        r.weight    || '',
-          ethnicity:     r.ethnicity || '',
-          surgeon:       r.surgeon   || '',
-          side:          r.side      || '',
-          global_sat:    r.global_sat|| '',
-          eq_mob:  r.eq_mob,  eq_self:  r.eq_self,
-          eq_usual: r.eq_usual, eq_pain: r.eq_pain, eq_anx: r.eq_anx,
-        },
-        scores: {
-          sym:        r.kss_sym  ?? 0,
-          sat:        r.kss_sat  ?? 0,
-          exp:        r.kss_exp  ?? 0,
-          wlk:        r.kss_wlk  ?? 0,
-          std:        r.kss_std  ?? 0,
-          adv:        r.kss_adv  ?? 0,
-          disc:       r.kss_disc ?? 0,
-          func:       r.kss_func ?? 0,
-          subjective: r.kss_subj ?? 0,
-          vas:        r.vas_postop  ?? 0,
-          vas_preop:  r.vas_preop  ?? null,
-          vas_delta:  r.vas_delta  ?? null,
-          lefRaw:     r.promis_lef ?? 0,
-          piRaw:      r.promis_pi  ?? 0,
-          pifRaw:     r.promis_pif ?? 0,
-          eq5dSum:    r.eq5d_sum   ?? 0,
-          eqVas:      r.eq_vas     ?? 0,
-        }
-      };
-    });
-    setSheetSubs(mapped);
-    setLastRefresh(new Date());
-  } else {
-    setLoadError('Could not load data from Supabase. Check your credentials.');
-    setSheetSubs([]);
-  }
-  setLoading(false);
-}, []);
-
-useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
-
-  // Merge: sheet data is source of truth; local adds any unsaved-yet entries
-  const subs = sheetSubs.length > 0 ? sheetSubs : localSubs;
-  const [filterStatus,setFilterStatus]=useState('all');
-  const [filterSurgeon,setFilterSurgeon]=useState('');
-  const [filterSide,setFilterSide]=useState('');
-  const [filterFrom,setFilterFrom]=useState('');
-  const [expanded,setExpanded]=useState(null);
+  const [rows,setRows]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [loadError,setLoadError]=useState('');
+  const [lastRefresh,setLastRefresh]=useState(null);
   const [tab,setTab]=useState('submissions');
-  const filtered=subs.filter(s=>{if(filterStatus!=='all'&&s.status!==filterStatus)return false;if(filterSurgeon&&!(s.data.surgeon||'').toLowerCase().includes(filterSurgeon.toLowerCase()))return false;if(filterSide&&s.data.side!==filterSide)return false;if(filterFrom&&s.timestamp<filterFrom)return false;return true;});
-  const complete=subs.filter(s=>s.status==='complete');
-  const partial=subs.filter(s=>s.status==='partial');
-  const avg=(fn)=>complete.length?(complete.reduce((s,r)=>s+fn(r),0)/complete.length).toFixed(1):'—';
-  const exportCSV=(rows,filename)=>{const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));const a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);};
-  const exportAll=()=>{const h=['Token','Status','Timestamp','Last Step','Name','Email','Phone','Survey Date','DOB','Sex','Height','Weight','Ethnicity','Surgeon','Side','KSS Sym','KSS Sat','KSS Exp','KSS Wlk','KSS Std','KSS Adv','KSS Disc','KSS Func','KSS Subj','VAS Post','VAS Pre','VAS Delta','Global Sat','PROMIS LEF','PROMIS PI','PROMIS PIF','EQ Mob','EQ Self','EQ Usual','EQ Pain','EQ Anx','EQ Sum','EQ VAS'];const rows=filtered.map(s=>{const d=s.data,sc=s.scores||{};return[s.token,s.status,new Date(s.timestamp).toLocaleString(),STEP_NAMES[s.lastStep]||'',d.contact_name||'',d.contact_email||'',d.contact_phone||'',d.survey_date||'',d.dob||'',d.sex||'',d.height_ft==='dk'?'NK':`${d.height_ft||''}'${d.height_in||''}"`,d.weight==='dk'?'NK':d.weight||'',d.ethnicity||'',d.surgeon==='dk'?'NK':d.surgeon||'',d.side||'',sc.sym??'',sc.sat??'',sc.exp??'',sc.wlk??'',sc.std??'',sc.adv??'',sc.disc??'',sc.func??'',sc.subjective??'',sc.vas??'',sc.vas_preop!==null?sc.vas_preop??'':'',sc.vas_delta!==null?sc.vas_delta??'':'',d.global_sat||'',sc.lefRaw??'',sc.piRaw??'',sc.pifRaw??'',d.eq_mob||'',d.eq_self||'',d.eq_usual||'',d.eq_pain||'',d.eq_anx||'',sc.eq5dSum??'',sc.eqVas??''];});exportCSV([h,...rows],`knee-outcomes-${new Date().toISOString().split('T')[0]}.csv`);};
-  const exportFollowUp=()=>{const rows=partial.filter(s=>s.data.contact_email||s.data.contact_phone).map(s=>[s.token,s.data.contact_name||'',s.data.contact_email||'',s.data.contact_phone||'',STEP_NAMES[s.lastStep]||'',new Date(s.timestamp).toLocaleString()]);exportCSV([['Token','Name','Email','Phone','Last Step','Timestamp'],...rows],`follow-up-${new Date().toISOString().split('T')[0]}.csv`);};
-  const dropOffSteps=partial.reduce((acc,s)=>{const k=STEP_NAMES[s.lastStep]||`Step ${s.lastStep}`;acc[k]=(acc[k]||0)+1;return acc;},{});
+  const [filterStatus,setFilterStatus]=useState('all');
+  const [filterSide,setFilterSide]=useState('');
+  const [filterSurgeon,setFilterSurgeon]=useState('');
+  const [expanded,setExpanded]=useState(null);
+
+  const load = useCallback(async()=>{
+    setLoading(true); setLoadError('');
+    const data = await fetchFromSupabase();
+    if(data) { setRows(data); setLastRefresh(new Date()); }
+    else setLoadError('Could not load from Supabase. Check credentials.');
+    setLoading(false);
+  },[]);
+
+  useEffect(()=>{load();},[load]);
+
+  const subs = rows.length>0 ? rows : localSubs;
+  const complete = subs.filter(s=>s.status==='complete');
+  const partial  = subs.filter(s=>s.status==='partial');
+  const avg = fn => complete.length?(complete.reduce((s,r)=>s+fn(r),0)/complete.length).toFixed(1):'—';
+
+  const filtered = subs.filter(s=>{
+    if(filterStatus!=='all'&&s.status!==filterStatus) return false;
+    if(filterSide&&(s.side||'')!==filterSide) return false;
+    if(filterSurgeon&&!(s.surgeon||'').toLowerCase().includes(filterSurgeon.toLowerCase())) return false;
+    return true;
+  });
+
+  const exportCSV=(data,filename)=>{
+    const csv=data.map(r=>Object.values(r).map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const h=data.length>0?Object.keys(data[0]).join(','):'';
+    const url=URL.createObjectURL(new Blob([h+'\n'+csv],{type:'text/csv'}));
+    const a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
+  };
+  const exportAll=()=>exportCSV(filtered,`knee-outcomes-${new Date().toISOString().split('T')[0]}.csv`);
+  const exportFollowUp=()=>exportCSV(
+    partial.filter(s=>s.contact_email||s.contact_phone).map(s=>({token:s.token,name:s.contact_name||'',email:s.contact_email||'',phone:s.contact_phone||'',last_step:s.last_step||'',timestamp:s.timestamp||''})),
+    `follow-up-${new Date().toISOString().split('T')[0]}.csv`
+  );
+
   return (
     <div className="fade-up">
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,flexWrap:'wrap',gap:8}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18,flexWrap:'wrap',gap:8}}>
         <div>
-          <h2 className="serif" style={{fontSize:26,fontWeight:700,color:'#111827'}}>Admin Dashboard</h2>
+          <h2 className="serif" style={{fontSize:24,fontWeight:700,color:'#111827'}}>Admin Dashboard</h2>
           <p style={{fontSize:13,color:'#6B7280'}}>IPBSN / Knee Surgery — Patient-Reported Outcomes</p>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <button onClick={loadFromSupabase} disabled={loading}
-            style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'6px 12px',cursor:loading?'wait':'pointer',fontFamily:'DM Sans,sans-serif',fontWeight:500}}>
-            {loading ? '⏳ Loading...' : '🔄 Refresh'}
+          <button onClick={load} disabled={loading}
+            style={{fontSize:12,color:'#1B4E7A',background:'#EFF6FF',border:'1px solid #BFDBFE',borderRadius:8,padding:'5px 11px',cursor:loading?'wait':'pointer',fontFamily:'DM Sans,sans-serif',fontWeight:500}}>
+            {loading?'⏳...':'🔄 Refresh'}
           </button>
           <button onClick={onLogout} style={{fontSize:13,color:'#9CA3AF',textDecoration:'underline',background:'none',border:'none',cursor:'pointer'}}>Log out</button>
         </div>
       </div>
-      {loadError&&(
-        <div style={{background:'#FFF7ED',border:'1px solid #FED7AA',borderRadius:12,padding:'10px 14px',marginBottom:16,fontSize:13,color:'#92400E'}}>
-          ⚠️ {loadError}
-        </div>
-      )}
-      {loading&&sheetSubs.length===0&&(
-        <div style={{textAlign:'center',padding:'40px 0',color:'#9CA3AF',fontSize:14}}>
-          ⏳ Loading responses from Google Sheets...
-        </div>
-      )}
-      {lastRefresh&&!loading&&(
-        <p style={{fontSize:11,color:'#D1D5DB',marginBottom:12,textAlign:'right'}}>Last synced: {lastRefresh.toLocaleTimeString()}</p>
-      )}
-      <div style={{display:'flex',gap:4,background:'#F3F4F6',borderRadius:12,padding:4,marginBottom:20}}>
-        {[['submissions','Submissions'],['dropoffs','Drop-offs'],['analytics','Analytics']].map(([k,lbl])=>(
-          <button key={k} onClick={()=>setTab(k)} style={{flex:1,padding:'8px 4px',borderRadius:9,border:'none',cursor:'pointer',fontSize:13,fontWeight:500,fontFamily:'DM Sans,sans-serif',background:tab===k?'#fff':'transparent',color:tab===k?'#1B4E7A':'#6B7280',boxShadow:tab===k?'0 1px 4px rgba(0,0,0,.08)':'none',transition:'all .15s'}}>{lbl}</button>
+
+      {loadError&&<div style={{background:'#FFF7ED',border:'1px solid #FED7AA',borderRadius:11,padding:'9px 13px',marginBottom:14,fontSize:13,color:'#92400E'}}>⚠️ {loadError}</div>}
+      {loading&&rows.length===0&&<div style={{textAlign:'center',padding:'36px 0',color:'#9CA3AF'}}>⏳ Loading from Supabase…</div>}
+      {lastRefresh&&!loading&&<p style={{fontSize:11,color:'#D1D5DB',marginBottom:10,textAlign:'right'}}>Synced: {lastRefresh.toLocaleTimeString()}</p>}
+
+      {/* Tabs */}
+      <div style={{display:'flex',gap:4,background:'#F3F4F6',borderRadius:11,padding:4,marginBottom:18}}>
+        {[['submissions','Submissions'],['dropoffs','Drop-offs'],['analytics','Analytics']].map(([k,l])=>(
+          <button key={k} onClick={()=>setTab(k)} style={{flex:1,padding:'7px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:13,fontWeight:500,fontFamily:'DM Sans,sans-serif',background:tab===k?'#fff':'transparent',color:tab===k?'#1B4E7A':'#6B7280',boxShadow:tab===k?'0 1px 4px rgba(0,0,0,.08)':'none',transition:'all .15s'}}>{l}</button>
         ))}
       </div>
 
-      {tab==='submissions'&&(
-        <>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:16}}>
-            {[{l:'Total',v:subs.length},{l:'Complete',v:complete.length,c:'#16A34A'},{l:'Partial',v:partial.length,c:'#D97706'},{l:'Avg KSS',v:avg(s=>s.scores.func),u:'/100'},{l:'Avg VAS',v:avg(s=>s.scores.vas),u:'/10'},{l:'Avg VAS Δ',v:(()=>{const p=complete.filter(s=>s.scores.vas_delta!==null);return p.length?(p.reduce((s,r)=>s+r.scores.vas_delta,0)/p.length).toFixed(1):'—';})()}].map(c=>(
-              <div key={c.l} style={{background:'#fff',borderRadius:14,padding:'12px 14px',textAlign:'center',border:'1px solid #F3F4F6'}}>
-                <p style={{fontSize:10,color:'#9CA3AF',marginBottom:3,textTransform:'uppercase'}}>{c.l}</p>
-                <p style={{fontSize:22,fontWeight:700,fontFamily:'Fraunces,serif',color:c.c||'#1B4E7A'}}>{c.v}<span style={{fontSize:11,color:'#D1D5DB'}}>{c.u||''}</span></p>
-              </div>
-            ))}
-          </div>
-          <div style={{background:'#F9FAFB',borderRadius:14,padding:'12px',marginBottom:12,border:'1px solid #F3F4F6',display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-            {[['Status',<select key="s" className="inp" style={{padding:'8px 12px',fontSize:13}} value={filterStatus} onChange={e=>setFilterStatus(e.target.value)}><option value="all">All</option><option value="complete">Complete</option><option value="partial">Partial</option></select>],['Side',<select key="si" className="inp" style={{padding:'8px 12px',fontSize:13}} value={filterSide} onChange={e=>setFilterSide(e.target.value)}><option value="">Both</option><option value="Left">Left</option><option value="Right">Right</option></select>],['Surgeon',<input key="su" type="text" className="inp" style={{padding:'8px 12px',fontSize:13}} placeholder="All" value={filterSurgeon} onChange={e=>setFilterSurgeon(e.target.value)}/>],['From date',<input key="d" type="date" className="inp" style={{padding:'8px 12px',fontSize:13}} value={filterFrom} onChange={e=>setFilterFrom(e.target.value)}/>]].map(([lbl,ctrl])=>(
-              <div key={lbl}><label style={{fontSize:11,color:'#6B7280',display:'block',marginBottom:4}}>{lbl}</label>{ctrl}</div>
-            ))}
-          </div>
-          <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginBottom:12}}>
-            <button onClick={exportFollowUp} style={{padding:'9px 16px',background:'#F59E0B',color:'#fff',borderRadius:10,border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>📋 Follow-up List ({partial.filter(s=>s.data.contact_email||s.data.contact_phone).length})</button>
-            <button onClick={exportAll} style={{padding:'9px 16px',background:'#16A34A',color:'#fff',borderRadius:10,border:'none',cursor:'pointer',fontSize:13,fontWeight:600}}>⬇ Export CSV ({filtered.length})</button>
-          </div>
-          {filtered.length===0?(
-            <div style={{textAlign:'center',padding:'48px 24px',background:'#fff',borderRadius:16}}>
-              <p style={{fontSize:32,marginBottom:8}}>📋</p>
-              <p style={{fontWeight:600,color:'#4B5563'}}>{subs.length===0?'No submissions yet':'No results match filters'}</p>
+      {/* ── SUBMISSIONS ── */}
+      {tab==='submissions'&&(<>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:14}}>
+          {[{l:'Total',v:subs.length},{l:'Complete',v:complete.length,c:'#16A34A'},{l:'Partial',v:partial.length,c:'#D97706'},{l:'Avg KSS',v:avg(s=>s.kss_func??0),u:'/100'},{l:'Avg VAS',v:avg(s=>s.vas_postop??0),u:'/10'},{l:'Avg VAS Δ',v:(()=>{const p=complete.filter(s=>s.delta_vas!=null);return p.length?(p.reduce((t,r)=>t+r.delta_vas,0)/p.length).toFixed(1):'—';})()}].map(c=>(
+            <div key={c.l} style={{background:'#fff',borderRadius:12,padding:'11px 12px',textAlign:'center',border:'1px solid #F3F4F6'}}>
+              <p style={{fontSize:10,color:'#9CA3AF',marginBottom:2,textTransform:'uppercase'}}>{c.l}</p>
+              <p style={{fontSize:20,fontWeight:700,fontFamily:'Fraunces,serif',color:c.c||'#1B4E7A'}}>{c.v}<span style={{fontSize:10,color:'#D1D5DB'}}>{c.u||''}</span></p>
             </div>
-          ):(
-            <div style={{overflowX:'auto'}}>
-              <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
-                <thead><tr style={{background:'#F9FAFB',borderBottom:'2px solid #E5E7EB'}}>
-                  {['Status','Token','Date','Side','Surgeon','Name','Last Step','VAS↗','Pre','Δ','KSS',''].map(h=>(
-                    <th key={h} style={{padding:'9px 10px',textAlign:'left',fontSize:10,fontWeight:600,color:'#6B7280',textTransform:'uppercase',whiteSpace:'nowrap'}}>{h}</th>
-                  ))}
-                </tr></thead>
-                <tbody>
-                  {filtered.map(s=>{
-                    const d=s.data,sc=s.scores||{},isExp=expanded===s.id,delta=sc.vas_delta;
-                    return (
-                      <React.Fragment key={s.id}>
-                        <tr style={{borderBottom:'1px solid #F3F4F6',background:isExp?'#F8FAFF':'#fff'}}>
-                          <td style={{padding:'9px 10px'}}><span className={`status-pill ${s.status==='complete'?'status-complete':'status-partial'}`}>{s.status==='complete'?'✓':'⏸'}</span></td>
-                          <td style={{padding:'9px 10px',fontFamily:'monospace',fontSize:10,color:'#9CA3AF'}}>{s.token}</td>
-                          <td style={{padding:'9px 10px',whiteSpace:'nowrap'}}>{new Date(s.timestamp).toLocaleDateString('en-GB')}</td>
-                          <td style={{padding:'9px 10px'}}>{d.side&&<span style={{padding:'2px 8px',borderRadius:20,fontSize:10,fontWeight:600,background:d.side==='Left'?'#DBEAFE':'#EDE9FE',color:d.side==='Left'?'#1E40AF':'#6D28D9'}}>{d.side}</span>}</td>
-                          <td style={{padding:'9px 10px',maxWidth:80,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.surgeon==='dk'?'NK':d.surgeon||'—'}</td>
-                          <td style={{padding:'9px 10px',maxWidth:90,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.contact_name||'—'}</td>
-                          <td style={{padding:'9px 10px',fontSize:11,color:'#6B7280'}}>{STEP_NAMES[s.lastStep]||'—'}</td>
-                          <td style={{padding:'9px 10px',fontWeight:600,color:'#1B4E7A',textAlign:'center'}}>{sc.vas!==undefined?sc.vas:'—'}</td>
-                          <td style={{padding:'9px 10px',fontWeight:600,color:'#7C3AED',textAlign:'center'}}>{sc.vas_preop!==null&&sc.vas_preop!==undefined?sc.vas_preop:'—'}</td>
-                          <td style={{padding:'9px 10px',fontWeight:600,textAlign:'center',color:delta<0?'#16A34A':delta>0?'#DC2626':'#6B7280'}}>{delta!==null&&delta!==undefined?(delta>0?`+${delta}`:delta):'—'}</td>
-                          <td style={{padding:'9px 10px',fontWeight:600,color:'#1B4E7A',textAlign:'center'}}>{sc.func!==undefined?sc.func:'—'}</td>
-                          <td style={{padding:'9px 10px'}}><button onClick={()=>setExpanded(isExp?null:s.id)} style={{fontSize:11,color:'#1B4E7A',background:'#EFF6FF',border:'none',cursor:'pointer',padding:'4px 10px',borderRadius:8,fontWeight:600}}>{isExp?'Close':'Details'}</button></td>
-                        </tr>
-                        {isExp&&(
-                          <tr><td colSpan={12} style={{background:'#F8FAFF',padding:0}}>
-                            <div style={{padding:'16px',display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8}}>
-                              {(d.contact_email||d.contact_phone)&&(
-                                <div style={{gridColumn:'1/-1',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:12,padding:'12px 14px'}}>
-                                  <div style={{display:'flex',gap:16,flexWrap:'wrap',fontSize:13,color:'#78350F'}}>
-                                    {d.contact_name&&<span>👤 {d.contact_name}</span>}
-                                    {d.contact_email&&<span>✉️ <a href={`mailto:${d.contact_email}`} style={{color:'#1B4E7A'}}>{d.contact_email}</a></span>}
-                                    {d.contact_phone&&<span>📱 {d.contact_phone}</span>}
-                                  </div>
+          ))}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:11}}>
+          {[['Status',<select key="s" className="inp" style={{padding:'7px 10px',fontSize:12}} value={filterStatus} onChange={e=>setFilterStatus(e.target.value)}><option value="all">All</option><option value="complete">Complete</option><option value="partial">Partial</option></select>],['Side',<select key="si" className="inp" style={{padding:'7px 10px',fontSize:12}} value={filterSide} onChange={e=>setFilterSide(e.target.value)}><option value="">Both</option><option value="Left">Left</option><option value="Right">Right</option></select>],['Surgeon',<input key="su" type="text" className="inp" style={{padding:'7px 10px',fontSize:12}} placeholder="All" value={filterSurgeon} onChange={e=>setFilterSurgeon(e.target.value)}/>]].map(([l,c])=>(
+            <div key={l}><label style={{fontSize:10,color:'#6B7280',display:'block',marginBottom:3}}>{l}</label>{c}</div>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginBottom:11}}>
+          <button onClick={exportFollowUp} style={{padding:'8px 14px',background:'#F59E0B',color:'#fff',borderRadius:9,border:'none',cursor:'pointer',fontSize:12,fontWeight:600}}>📋 Follow-up ({partial.filter(s=>s.contact_email||s.contact_phone).length})</button>
+          <button onClick={exportAll} style={{padding:'8px 14px',background:'#16A34A',color:'#fff',borderRadius:9,border:'none',cursor:'pointer',fontSize:12,fontWeight:600}}>⬇ Export CSV ({filtered.length})</button>
+        </div>
+        {filtered.length===0?<div style={{textAlign:'center',padding:'36px',background:'#fff',borderRadius:14}}><p style={{fontSize:28,marginBottom:7}}>📋</p><p style={{fontWeight:600,color:'#4B5563'}}>{subs.length===0?'No submissions yet':'No matches'}</p></div>:(
+          <div style={{overflowX:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:11}}>
+              <thead><tr style={{background:'#F9FAFB',borderBottom:'2px solid #E5E7EB'}}>
+                {['Status','Token','Date','Side','Name','Last Step','VAS↗','VAS Pre','Δ VAS','KSS Func',''].map(h=>(
+                  <th key={h} style={{padding:'8px 9px',textAlign:'left',fontSize:9,fontWeight:600,color:'#6B7280',textTransform:'uppercase',whiteSpace:'nowrap'}}>{h}</th>
+                ))}
+              </tr></thead>
+              <tbody>
+                {filtered.map(s=>{
+                  const isExp=expanded===s.token;
+                  const delta=s.delta_vas;
+                  return(
+                    <React.Fragment key={s.token}>
+                      <tr style={{borderBottom:'1px solid #F3F4F6',background:isExp?'#F8FAFF':'#fff'}}>
+                        <td style={{padding:'8px 9px'}}><span className={`status-pill ${s.status==='complete'?'status-complete':'status-partial'}`}>{s.status==='complete'?'✓':'⏸'}</span></td>
+                        <td style={{padding:'8px 9px',fontFamily:'monospace',fontSize:9,color:'#9CA3AF'}}>{(s.token||'').slice(0,12)}</td>
+                        <td style={{padding:'8px 9px',whiteSpace:'nowrap'}}>{s.timestamp?new Date(s.timestamp).toLocaleDateString('en-GB'):''}</td>
+                        <td style={{padding:'8px 9px'}}>{s.side&&<span style={{padding:'2px 7px',borderRadius:20,fontSize:9,fontWeight:600,background:s.side==='Left'?'#DBEAFE':'#EDE9FE',color:s.side==='Left'?'#1E40AF':'#6D28D9'}}>{s.side}</span>}</td>
+                        <td style={{padding:'8px 9px',maxWidth:80,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{s.contact_name||'—'}</td>
+                        <td style={{padding:'8px 9px',fontSize:10,color:'#6B7280'}}>{s.last_step||'—'}</td>
+                        <td style={{padding:'8px 9px',fontWeight:600,color:'#1B4E7A',textAlign:'center'}}>{s.vas_postop??'—'}</td>
+                        <td style={{padding:'8px 9px',fontWeight:600,color:'#7C3AED',textAlign:'center'}}>{s.pre_vas??'—'}</td>
+                        <td style={{padding:'8px 9px',fontWeight:600,textAlign:'center',color:delta<0?'#16A34A':delta>0?'#DC2626':'#6B7280'}}>{delta!=null?(delta>0?`+${delta}`:delta):'—'}</td>
+                        <td style={{padding:'8px 9px',fontWeight:600,color:'#1B4E7A',textAlign:'center'}}>{s.kss_func??'—'}</td>
+                        <td style={{padding:'8px 9px'}}><button onClick={()=>setExpanded(isExp?null:s.token)} style={{fontSize:10,color:'#1B4E7A',background:'#EFF6FF',border:'none',cursor:'pointer',padding:'3px 8px',borderRadius:7,fontWeight:600}}>{isExp?'Close':'Details'}</button></td>
+                      </tr>
+                      {isExp&&(
+                        <tr><td colSpan={11} style={{background:'#F8FAFF',padding:0}}>
+                          <div style={{padding:'14px',display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:7}}>
+                            {(s.contact_email||s.contact_phone)&&(
+                              <div style={{gridColumn:'1/-1',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:10,padding:'10px 12px',marginBottom:4}}>
+                                <div style={{display:'flex',gap:14,flexWrap:'wrap',fontSize:12,color:'#78350F'}}>
+                                  {s.contact_name&&<span>👤 {s.contact_name}</span>}
+                                  {s.contact_email&&<span>✉️ <a href={`mailto:${s.contact_email}`} style={{color:'#1B4E7A'}}>{s.contact_email}</a></span>}
+                                  {s.contact_phone&&<span>📱 {s.contact_phone}</span>}
                                 </div>
-                              )}
-                              {[['KSS Wlk/Stand',sc.wlk,30],['KSS Standard',sc.std,30],['KSS Advanced',sc.adv,25],['KSS Disc.',sc.disc,15],['PROMIS LEF',sc.lefRaw,20],['PROMIS Pain Int.',sc.piRaw,30],['PROMIS Pain Interf.',sc.pifRaw,20],['EQ-5D Sum',sc.eq5dSum,25],['Global Satisfaction',d.global_sat||'—',null],['Ethnicity',d.ethnicity||'—',null]].map(([lbl,val,mx])=>(
-                                <div key={lbl} style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#fff',padding:'8px 12px',borderRadius:10,fontSize:12}}>
-                                  <span style={{color:'#6B7280'}}>{lbl}</span>
-                                  <span style={{fontWeight:600,color:'#1B4E7A'}}>{val}{mx&&typeof val==='number'?<span style={{fontWeight:400,color:'#D1D5DB'}}>/{mx}</span>:''}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </td></tr>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
+                              </div>
+                            )}
+                            {[
+                              ['KSS Func (post)',s.kss_func,100],['KSS Func (pre)',s.pre_kss_func,100],
+                              ['KSS Symptoms',s.kss_sym,25],['PROMIS LEF (post)',s.promis_lef,20],
+                              ['PROMIS LEF (pre)',s.pre_promis_lef,20],['Pain Interference (post)',s.promis_pif,20],
+                              ['Pain Interference (pre)',s.pre_promis_pif,20],['EQ-5D Sum (post)',s.eq5d_sum,25],
+                              ['EQ-5D Sum (pre)',s.pre_eq5d_sum,25],['EQ VAS (post)',s.eq_vas,100],
+                              ['EQ VAS (pre)',s.pre_eq_vas,100],['Global Satisfaction',s.global_sat||'—',null],
+                            ].map(([l,v,mx])=>(
+                              <div key={l} style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#fff',padding:'7px 10px',borderRadius:8,fontSize:11}}>
+                                <span style={{color:'#6B7280'}}>{l}</span>
+                                <span style={{fontWeight:600,color:'#1B4E7A'}}>{v!=null?v:'—'}{mx&&typeof v==='number'?<span style={{fontWeight:400,color:'#D1D5DB'}}>/{mx}</span>:''}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </td></tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </>)}
 
+      {/* ── DROP-OFFS ── */}
       {tab==='dropoffs'&&(
         <div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:16}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:14}}>
             {[{l:'Started',v:subs.length,c:'#1B4E7A'},{l:'Completed',v:complete.length,c:'#16A34A'},{l:'Dropped off',v:partial.length,c:'#D97706'}].map(c=>(
-              <div key={c.l} style={{background:'#fff',borderRadius:14,padding:'14px',textAlign:'center',border:'1px solid #F3F4F6'}}>
-                <p style={{fontSize:10,color:'#9CA3AF',marginBottom:3,textTransform:'uppercase'}}>{c.l}</p>
-                <p style={{fontSize:28,fontWeight:700,fontFamily:'Fraunces,serif',color:c.c}}>{c.v}</p>
-                {c.l==='Dropped off'&&subs.length>0&&<p style={{fontSize:11,color:'#9CA3AF'}}>{Math.round((partial.length/subs.length)*100)}% rate</p>}
+              <div key={c.l} style={{background:'#fff',borderRadius:12,padding:'12px',textAlign:'center',border:'1px solid #F3F4F6'}}>
+                <p style={{fontSize:10,color:'#9CA3AF',marginBottom:2,textTransform:'uppercase'}}>{c.l}</p>
+                <p style={{fontSize:24,fontWeight:700,fontFamily:'Fraunces,serif',color:c.c}}>{c.v}</p>
+                {c.l==='Dropped off'&&subs.length>0&&<p style={{fontSize:10,color:'#9CA3AF'}}>{Math.round((partial.length/subs.length)*100)}% rate</p>}
               </div>
             ))}
           </div>
-          {Object.keys(dropOffSteps).length>0&&(
-            <div style={{background:'#fff',borderRadius:16,padding:'16px',marginBottom:16,border:'1px solid #F3F4F6'}}>
-              <p style={{fontWeight:600,color:'#1F2937',marginBottom:12}}>Where patients dropped off</p>
-              {Object.entries(dropOffSteps).sort((a,b)=>b[1]-a[1]).map(([step,count])=>(
-                <div key={step} style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
-                  <span style={{fontSize:12,color:'#374151',width:180,flexShrink:0}}>{step}</span>
-                  <div style={{flex:1,height:8,background:'#F3F4F6',borderRadius:4,overflow:'hidden'}}><div style={{height:'100%',width:`${(count/Math.max(...Object.values(dropOffSteps)))*100}%`,background:'#F59E0B',borderRadius:4}}/></div>
-                  <span style={{fontSize:13,fontWeight:600,color:'#D97706',width:20,textAlign:'right'}}>{count}</span>
-                </div>
-              ))}
+          <div style={{background:'#fff',borderRadius:14,padding:'14px',border:'1px solid #F3F4F6'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:11}}>
+              <p style={{fontWeight:600,color:'#1F2937',fontSize:14}}>Contactable patients</p>
+              <button onClick={exportFollowUp} style={{fontSize:11,color:'#F59E0B',fontWeight:600,background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:7,padding:'4px 10px',cursor:'pointer'}}>Export</button>
             </div>
-          )}
-          <div style={{background:'#fff',borderRadius:16,padding:'16px',border:'1px solid #F3F4F6'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
-              <p style={{fontWeight:600,color:'#1F2937'}}>Contactable patients</p>
-              <button onClick={exportFollowUp} style={{fontSize:12,color:'#F59E0B',fontWeight:600,background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:8,padding:'5px 12px',cursor:'pointer'}}>Export</button>
-            </div>
-            {partial.filter(s=>s.data.contact_email||s.data.contact_phone).length===0?(
-              <p style={{fontSize:13,color:'#9CA3AF',textAlign:'center',padding:'20px 0'}}>No contactable partial completions yet.</p>
-            ):(
-              partial.filter(s=>s.data.contact_email||s.data.contact_phone).map(s=>(
-                <div key={s.id} style={{display:'flex',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid #F9FAFB',flexWrap:'wrap',gap:8}}>
+            {partial.filter(s=>s.contact_email||s.contact_phone).length===0?
+              <p style={{fontSize:13,color:'#9CA3AF',textAlign:'center',padding:'16px 0'}}>No contactable partials yet.</p>:
+              partial.filter(s=>s.contact_email||s.contact_phone).map(s=>(
+                <div key={s.token} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid #F9FAFB',flexWrap:'wrap',gap:7}}>
                   <div>
-                    <p style={{fontWeight:600,color:'#1F2937',fontSize:14}}>{s.data.contact_name||'Anonymous'}</p>
-                    {s.data.contact_email&&<p style={{fontSize:12,color:'#1B4E7A'}}><a href={`mailto:${s.data.contact_email}`}>{s.data.contact_email}</a></p>}
-                    {s.data.contact_phone&&<p style={{fontSize:12,color:'#6B7280'}}>{s.data.contact_phone}</p>}
+                    <p style={{fontWeight:600,color:'#1F2937',fontSize:13}}>{s.contact_name||'Anonymous'}</p>
+                    {s.contact_email&&<p style={{fontSize:11,color:'#1B4E7A'}}><a href={`mailto:${s.contact_email}`}>{s.contact_email}</a></p>}
+                    {s.contact_phone&&<p style={{fontSize:11,color:'#6B7280'}}>{s.contact_phone}</p>}
                   </div>
                   <div style={{textAlign:'right'}}>
-                    <span className="status-pill status-partial" style={{display:'block',marginBottom:4}}>Stopped: {STEP_NAMES[s.lastStep]||`Step ${s.lastStep}`}</span>
-                    <span style={{fontSize:11,color:'#9CA3AF'}}>{new Date(s.timestamp).toLocaleDateString('en-GB')}</span>
+                    <span className="status-pill status-partial" style={{display:'block',marginBottom:3,fontSize:10}}>Stopped: {s.last_step||'—'}</span>
+                    <span style={{fontSize:10,color:'#9CA3AF'}}>{s.timestamp?new Date(s.timestamp).toLocaleDateString('en-GB'):''}</span>
                   </div>
                 </div>
               ))
-            )}
+            }
           </div>
         </div>
       )}
 
+      {/* ── ANALYTICS ── */}
       {tab==='analytics'&&(
         <div>
-          {complete.length===0?(
-            <div style={{textAlign:'center',padding:'48px 24px',background:'#fff',borderRadius:16}}>
-              <p style={{fontSize:32,marginBottom:8}}>📊</p><p style={{fontWeight:600,color:'#4B5563'}}>No complete submissions yet</p>
-            </div>
-          ):(
+          {complete.length===0?<div style={{textAlign:'center',padding:'40px',background:'#fff',borderRadius:14}}><p style={{fontSize:28,marginBottom:7}}>📊</p><p style={{fontWeight:600,color:'#4B5563'}}>No complete submissions yet</p></div>:(
             <>
-              <div style={{background:'#fff',borderRadius:16,padding:'20px',marginBottom:12,border:'1px solid #F3F4F6'}}>
-                <p style={{fontWeight:600,color:'#1F2937',marginBottom:16}}>VAS Pain: Pre-op Recall vs Post-op</p>
-                {(()=>{const pres=complete.filter(s=>s.scores.vas_preop!==null);return[['Pre-op recall avg',pres.length?pres.reduce((s,r)=>s+r.scores.vas_preop,0)/pres.length:null,'#7C3AED'],['Post-op avg',complete.reduce((s,r)=>s+r.scores.vas,0)/complete.length,'#1B4E7A'],['Mean improvement',pres.length?pres.reduce((s,r)=>s+r.scores.vas_preop-r.scores.vas,0)/pres.length:null,'#16A34A']].map(([lbl,v,col])=>v===null?null:(
-                  <div key={lbl} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid #F9FAFB'}}>
-                    <span style={{fontSize:14,color:'#374151'}}>{lbl}</span>
-                    <span style={{fontSize:22,fontWeight:700,fontFamily:'Fraunces,serif',color:col}}>{v.toFixed(1)}/10</span>
+              <div style={{background:'#fff',borderRadius:14,padding:'18px',marginBottom:11,border:'1px solid #F3F4F6'}}>
+                <p style={{fontWeight:600,color:'#1F2937',marginBottom:14}}>VAS Pain — Pre vs Post</p>
+                {(()=>{const p=complete.filter(s=>s.pre_vas!=null);return[
+                  ['Pre-op recall avg', p.length?(p.reduce((t,r)=>t+r.pre_vas,0)/p.length).toFixed(1):null,'#7C3AED'],
+                  ['Post-op avg', (complete.reduce((t,r)=>t+(r.vas_postop??0),0)/complete.length).toFixed(1),'#1B4E7A'],
+                  ['Mean improvement', p.length?(p.reduce((t,r)=>t+(r.pre_vas??0)-(r.vas_postop??0),0)/p.length).toFixed(1):null,'#16A34A'],
+                ].map(([l,v,col])=>v===null?null:(
+                  <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'9px 0',borderBottom:'1px solid #F9FAFB'}}>
+                    <span style={{fontSize:14,color:'#374151'}}>{l}</span>
+                    <span style={{fontSize:20,fontWeight:700,fontFamily:'Fraunces,serif',color:col}}>{v}/10</span>
                   </div>
                 ));})()}
               </div>
-              <div style={{background:'#fff',borderRadius:16,padding:'20px',border:'1px solid #F3F4F6'}}>
-                <p style={{fontWeight:600,color:'#1F2937',marginBottom:16}}>KSS Score Averages</p>
-                {[{l:'Symptoms (/25)',fn:s=>s.scores.sym,max:25},{l:'Satisfaction (/40)',fn:s=>s.scores.sat,max:40},{l:'Expectations (/15)',fn:s=>s.scores.exp,max:15},{l:'Functional (/100)',fn:s=>s.scores.func,max:100}].map(({l,fn,max})=>{
-                  const a=complete.reduce((s,r)=>s+fn(r),0)/complete.length;
-                  return(<div key={l} style={{marginBottom:14}}><div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{fontSize:13,color:'#374151'}}>{l}</span><span style={{fontSize:13,fontWeight:600,color:'#1B4E7A'}}>{a.toFixed(1)}</span></div><div style={{height:8,background:'#F3F4F6',borderRadius:4,overflow:'hidden'}}><div style={{height:'100%',width:`${(a/max)*100}%`,background:'linear-gradient(90deg,#1B4E7A,#2E7DAF)',borderRadius:4}}/></div></div>);
+              <div style={{background:'#fff',borderRadius:14,padding:'18px',border:'1px solid #F3F4F6'}}>
+                <p style={{fontWeight:600,color:'#1F2937',marginBottom:14}}>Average Scores (Post-op)</p>
+                {[{l:'KSS Functional (/100)',fn:s=>s.kss_func??0,max:100},{l:'KSS Symptoms (/25)',fn:s=>s.kss_sym??0,max:25},{l:'PROMIS LEF (/20)',fn:s=>s.promis_lef??0,max:20},{l:'EQ-5D Sum (/25)',fn:s=>s.eq5d_sum??0,max:25}].map(({l,fn,max})=>{
+                  const a=complete.reduce((t,r)=>t+fn(r),0)/complete.length;
+                  return(<div key={l} style={{marginBottom:12}}><div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}><span style={{fontSize:13,color:'#374151'}}>{l}</span><span style={{fontSize:13,fontWeight:600,color:'#1B4E7A'}}>{a.toFixed(1)}</span></div><div style={{height:7,background:'#F3F4F6',borderRadius:3,overflow:'hidden'}}><div style={{height:'100%',width:`${(a/max)*100}%`,background:'linear-gradient(90deg,#1B4E7A,#2E7DAF)',borderRadius:3}}/></div></div>);
                 })}
               </div>
             </>
@@ -1059,105 +1147,93 @@ useEffect(() => { loadFromSupabase(); }, [loadFromSupabase]);
   );
 }
 
+/* ═══════════════════════════════════════
+   APP
+   ═══════════════════════════════════════ */
 function App() {
   const [view,setView]=useState('survey');
   const [step,setStep]=useState(0);
   const [token]=useState(()=>genToken());
-  const [data,setData]=useState({survey_date:new Date().toISOString().split('T')[0],b1_walk:0,b1_stairs:0,vas:5,vas_preop:5,eq_vas:50,pi1:0,pi2:0,pi3:0});
-  const [subs,setSubs]=useState([]);
+  const [data,setData]=useState({
+    survey_date:new Date().toISOString().split('T')[0],
+    b1_walk:0, b1_walk_pre:5,
+    b1_stairs:0, b1_stairs_pre:5,
+    vas:0, vas_pre:5,
+    pi3:0,
+    eq_vas:50, eq_vas_pre:50,
+  });
+  const [localSubs,setLocalSubs]=useState([]);
   const [adminIn,setAdminIn]=useState(false);
-
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [submitting,setSubmitting]=useState(false);
+  const [submitError,setSubmitError]=useState('');
 
   const set=useCallback((k,v)=>setData(p=>({...p,[k]:v})),[]);
 
   const go=useCallback((n)=>{
-    setStep(n);
-    window.scrollTo({top:0,behavior:'smooth'});
-    if(n>0&&n<18){
-      setSubs(prev=>{
-        const scores=calcScores(data);
-        const rec={id:token,token,timestamp:new Date().toISOString(),lastStep:n,status:'partial',data:{...data},scores};
-        const existing=prev.findIndex(s=>s.token===token);
-        if(existing>=0){const u=[...prev];u[existing]=rec;return u;}
-        return [...prev,rec];
-      });
-    }
-  },[data,token]);
+    setStep(n); window.scrollTo({top:0,behavior:'smooth'});
+  },[]);
 
   const handleSubmit=async()=>{
-    setSubmitting(true);
-    setSubmitError('');
-    const scores=calcScores(data);
-    const rec={id:token,token,timestamp:new Date().toISOString(),lastStep:17,status:'complete',data:{...data},scores};
-    const result = await sendToSupabase(rec);
-    if (!result.ok) {
-      setSubmitError('Something went wrong saving your answers. Please try again.');
-      setSubmitting(false);
-      return;
-    }
-    setSubs(prev=>{const existing=prev.findIndex(s=>s.token===token);if(existing>=0){const u=[...prev];u[existing]=rec;return u;}return[...prev,rec];});
+    setSubmitting(true); setSubmitError('');
+    const rec={id:token,token,timestamp:new Date().toISOString(),lastStep:11,status:'complete',data:{...data}};
+    const result=await sendToSupabase(rec);
+    if(!result.ok){setSubmitError('Something went wrong. Please try again.');setSubmitting(false);return;}
+    setLocalSubs(p=>[...p,rec]);
     setSubmitting(false);
-    setStep(18);
+    setStep(12);
     window.scrollTo({top:0,behavior:'smooth'});
   };
-
-  const scores=calcScores(data);
 
   const renderStep=()=>{
     switch(step){
       case 0:  return <Welcome onStart={()=>go(1)}/>;
       case 1:  return <ContactInfo d={data} set={set} token={token} onNext={()=>go(2)}/>;
       case 2:  return <Demographics d={data} set={set} onBack={()=>go(1)} onNext={()=>go(3)}/>;
-      case 3:  return <KSSSymptoms d={data} set={set} onBack={()=>go(2)} onNext={()=>go(4)}/>;
-      case 4:  return <KSSSatisfaction d={data} set={set} onBack={()=>go(3)} onNext={()=>go(5)}/>;
-      case 5:  return <KSSExpectations d={data} set={set} onBack={()=>go(4)} onNext={()=>go(6)}/>;
-      case 6:  return <KSSWalking d={data} set={set} onBack={()=>go(5)} onNext={()=>go(7)}/>;
-      case 7:  return <KSSStandard d={data} set={set} onBack={()=>go(6)} onNext={()=>go(8)}/>;
-      case 8:  return <KSSAdvanced d={data} set={set} onBack={()=>go(7)} onNext={()=>go(9)}/>;
-      case 9:  return <KSSDiscretionary d={data} set={set} onBack={()=>go(8)} onNext={()=>go(10)}/>;
-      case 10: return <VASPostOp d={data} set={set} onBack={()=>go(9)} onNext={()=>go(11)}/>;
-      case 11: return <VASPreOpRecall d={data} set={set} onBack={()=>go(10)} onNext={()=>go(12)}/>;
-      case 12: return <GlobalSat d={data} set={set} onBack={()=>go(11)} onNext={()=>go(13)}/>;
-      case 13: return <PROMISLef d={data} set={set} onBack={()=>go(12)} onNext={()=>go(14)}/>;
-      case 14: return <PROMISPainIntensity d={data} set={set} onBack={()=>go(13)} onNext={()=>go(15)}/>;
-      case 15: return <PROMISPainInterference d={data} set={set} onBack={()=>go(14)} onNext={()=>go(16)}/>;
-      case 16: return <EQ5D d={data} set={set} onBack={()=>go(15)} onNext={()=>go(17)}/>;
-      case 17: return <Review d={data} scores={scores} onBack={()=>go(16)} onSubmit={handleSubmit} submitting={submitting} submitError={submitError}/>;
-      case 18: return <ThankYou token={token}/>;
+      case 3:  return <PainSection d={data} set={set} onBack={()=>go(2)} onNext={()=>go(4)}/>;
+      case 4:  return <KneeSatisfaction d={data} set={set} onBack={()=>go(3)} onNext={()=>go(5)}/>;
+      case 5:  return <Expectations d={data} set={set} onBack={()=>go(4)} onNext={()=>go(6)}/>;
+      case 6:  return <WalkingMobility d={data} set={set} onBack={()=>go(5)} onNext={()=>go(7)}/>;
+      case 7:  return <Activities d={data} set={set} onBack={()=>go(6)} onNext={()=>go(8)}/>;
+      case 8:  return <PainImpact d={data} set={set} onBack={()=>go(7)} onNext={()=>go(9)}/>;
+      case 9:  return <QualityOfLife d={data} set={set} onBack={()=>go(8)} onNext={()=>go(10)}/>;
+      case 10: return <OtherActivities d={data} set={set} onBack={()=>go(9)} onNext={()=>go(11)}/>;
+      case 11: return <Review onBack={()=>go(10)} onSubmit={handleSubmit} submitting={submitting} submitError={submitError}/>;
+      case 12: return <ThankYou token={token}/>;
       default: return null;
     }
   };
 
   return (
     <div style={{minHeight:'100vh',background:'linear-gradient(160deg,#EEF2FF 0%,#F4F6FB 40%,#EDF7F4 100%)'}}>
-      <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(255,255,255,.88)',backdropFilter:'blur(12px)',borderBottom:'1px solid rgba(0,0,0,.06)',padding:'0 16px'}}>
-        <div style={{maxWidth:680,margin:'0 auto',height:52,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <div style={{width:30,height:30,background:'#1B4E7A',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+      <nav style={{position:'sticky',top:0,zIndex:100,background:'rgba(255,255,255,.9)',backdropFilter:'blur(12px)',borderBottom:'1px solid rgba(0,0,0,.06)',padding:'0 14px'}}>
+        <div style={{maxWidth:660,margin:'0 auto',height:50,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div style={{display:'flex',alignItems:'center',gap:7}}>
+            <div style={{width:28,height:28,background:'#1B4E7A',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
             </div>
-            <span style={{fontWeight:600,fontSize:14,color:'#1F2937'}}>Knee Outcomes Platform</span>
+            <span style={{fontWeight:600,fontSize:13,color:'#1F2937'}}>Knee Outcomes Platform</span>
           </div>
-          <button onClick={()=>setView(v=>v==='survey'?'admin':'survey')} style={{fontSize:12,fontWeight:500,color:'#6B7280',background:'#F3F4F6',border:'none',cursor:'pointer',padding:'5px 12px',borderRadius:8}}>
+          <button onClick={()=>setView(v=>v==='survey'?'admin':'survey')}
+            style={{fontSize:11,fontWeight:500,color:'#6B7280',background:'#F3F4F6',border:'none',cursor:'pointer',padding:'4px 10px',borderRadius:7}}>
             {view==='survey'?'🔐 Admin':'📋 Survey'}
           </button>
         </div>
       </nav>
-      <main style={{maxWidth:600,margin:'0 auto',padding:'20px 16px 60px'}}>
+      <main style={{maxWidth:580,margin:'0 auto',padding:'18px 14px 56px'}}>
         {view==='survey'?(
           <>
-            {step>0&&step<18&&<ProgressBar step={step} total={TOTAL_STEPS}/>}
+            {step>0&&step<12&&<ProgressBar step={step} total={TOTAL_STEPS}/>}
             <div className="card">{renderStep()}</div>
           </>
         ):(
           <div className={adminIn?'card':''} style={adminIn?{}:{background:'transparent',boxShadow:'none',border:'none'}}>
-            {!adminIn?<AdminLogin onLogin={()=>setAdminIn(true)}/>:<AdminDashboard localSubs={subs} onLogout={()=>setAdminIn(false)}/>}
+            {!adminIn?<AdminLogin onLogin={()=>setAdminIn(true)}/>:<AdminDashboard localSubs={localSubs} onLogout={()=>setAdminIn(false)}/>}
           </div>
         )}
       </main>
-      <footer style={{textAlign:'center',padding:'0 0 24px',fontSize:11,color:'#C4C9D4'}}>Post-IPBSN Neurectomy / Knee Surgery Outcomes Platform · Confidential · GDPR Compliant</footer>
+      <footer style={{textAlign:'center',padding:'0 0 20px',fontSize:10,color:'#C4C9D4'}}>
+        Post-IPBSN Neurectomy / Knee Surgery Outcomes · Confidential · GDPR Compliant
+      </footer>
     </div>
   );
 }
